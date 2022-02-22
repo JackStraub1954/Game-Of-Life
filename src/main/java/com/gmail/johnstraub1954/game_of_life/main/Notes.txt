@@ -1,0 +1,9 @@
+Rule formats:
+
+MCell (.mcl) #RULE survival/birth/???
+third part is optional
+	#RULE 345/34/6: 3,4,5 = survival, 3,4 = birth, 6 = ? (# of game states?)
+	#RULE 23/3: 2,3 = survival, 3 = birth
+	
+RLE (.rle) rule=Bxxx/Syyy
+    rule=B3/S23: 2,3 = survival, 3 = birth
