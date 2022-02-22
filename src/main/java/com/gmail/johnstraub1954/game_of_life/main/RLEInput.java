@@ -26,12 +26,10 @@ public class RLEInput
      * @see #parseHeader(String, BufferedReader)
      */
     private static final String  ruleRegEx  = 
-        "x\\s*=\\s*(\\d+)"
-        + "\\s*,\\s*"
-        + "y\\s*=\\s*(\\d+)"
+        "x\\s*=\\s*(\\d+)\\s*,*\\s*"
+        + "y\\s*=\\s*(\\d+)\\s*,*"
         + "\\s*rule\\s*=\\s*"
-        + "(\\d+)\\s*/\\s*(\\d+)"
-        + "(?:\\s*/\\s*(\\d+)){0,1}";
+        + "(\\d+)\\s*/\\s*(\\d+)";
     
     /**
      * Compiled pattern for parsing rules
@@ -45,6 +43,9 @@ public class RLEInput
     /** Used for reading input file */
     private BufferedReader reader  = null;
     
+    /** true if the header line was present in the input */
+    private boolean     headerPresent   = false;
+    
     private final List<String>  comments        = new ArrayList<>();
     private final List<Integer> survivalRules   = new ArrayList<>();
     private final List<Integer> birthRules      = new ArrayList<>();
@@ -52,6 +53,7 @@ public class RLEInput
     private String              name            = "Unnamed";
     private String              author          = "Unknown";
     private Point               upperLeft       = new Point( 0, 0 );
+    private RLEGridDecoder      gridDecoder;
     private GridMap             gridMap         = null;
 
     public RLEInput( String path )
@@ -205,6 +207,11 @@ public class RLEInput
         return birthRules;
     }
     
+    public RLEGridDecoder getGridDecoder()
+    {
+        return gridDecoder;
+    }
+    
     private void parse( URL url ) throws IOException
     {
         try ( InputStream inStream = url.openStream(); )
@@ -224,10 +231,17 @@ public class RLEInput
             String  line    = parseComments();
             if ( line != null )
             {
+                bufReader.mark( 10000 );
                 line = parseHeader( line );
-                if ( line != null )
-                    parseGrid( line );
+                // there's a good chance that parsing
+                // the front matter will read
+                // the first line of the input sequence,
+                // so put stream back to where it was before
+                // parsing the header.
+                if ( headerPresent )
+                    bufReader.reset();
             }
+            gridDecoder = new RLEGridDecoder( bufReader );
         }
     }
     
@@ -249,6 +263,7 @@ public class RLEInput
         String  line    = null;
         while ( !done && (line = nextLine( reader )) != null )
         {
+            // note: nextLine never returns an empty line
             if ( line.charAt( 0 ) == '#' )
                 parseComment( line );
             else
@@ -278,8 +293,9 @@ public class RLEInput
         
         if ( found )
         {
+            headerPresent = true;
             int matchCount  = matcher.groupCount();
-            if ( matchCount < 5 || matchCount > 6 )
+            if ( matchCount < 4 || matchCount > 5 )
             {
                 String  message =
                     "for RLE header string \"" + line
@@ -308,9 +324,12 @@ public class RLEInput
                 birthRules.add( Integer.parseInt( rule ) );
             }
             
-            str = matcher.group( 5 );
-            if ( str != null )
-                gameStates = Integer.parseInt( str );
+            if ( matchCount > 4 )
+            {
+                str = matcher.group( 5 );
+                if ( str != null )
+                    gameStates = Integer.parseInt( str );
+            }
 
             next = nextLine( reader );
         }
@@ -435,7 +454,7 @@ public class RLEInput
     private String nextLine( BufferedReader reader) throws IOException
     {
         String  line    = nextLineRaw( reader );
-        while ( line != null && !line.isEmpty() )
+        while ( line != null && line.isEmpty() )
             line = nextLineRaw( reader );
         return line;
     }
