@@ -15,21 +15,30 @@ import java.util.regex.Pattern;
 public class RLEInput
 {
     /** 
-     * Regular expression for parsing rules, such as:
+     * Regular expression for parsing rules.
+     * For example:
      * <br>&nbsp;&nbsp;&nbsp;&nbsp;
      * x=100,y=200,rule=23/3
      * <br>&nbsp;&nbsp;&nbsp;&nbsp;
      * x = 100 , y = 200 , rule = 23/3
      * <br>&nbsp;&nbsp;&nbsp;&nbsp;
+     * x = 100 y= 100 rule = 23/3
+     * <br>&nbsp;&nbsp;&nbsp;&nbsp;
+     * x = 100, y= 100 rule = s23/b3
      * 
      * @see #rulePattern
      * @see #parseHeader(String, BufferedReader)
      */
     private static final String  ruleRegEx  = 
+//        "x\\s*=\\s*(\\d+)\\s*,*\\s*"
+//        + "y\\s*=\\s*(\\d+)\\s*,*"
+//        + "\\s*rule\\s*=\\s*"
+//        + "(\\d+)\\s*/\\s*(\\d+)";
         "x\\s*=\\s*(\\d+)\\s*,*\\s*"
         + "y\\s*=\\s*(\\d+)\\s*,*"
         + "\\s*rule\\s*=\\s*"
-        + "(\\d+)\\s*/\\s*(\\d+)";
+        + "([sb]){0,1}(\\d+)\\s*/\\s*([sb]){0,1}(\\d+)";
+
     
     /**
      * Compiled pattern for parsing rules
@@ -295,7 +304,7 @@ public class RLEInput
         {
             headerPresent = true;
             int matchCount  = matcher.groupCount();
-            if ( matchCount < 4 || matchCount > 5 )
+            if ( matchCount != 6 )
             {
                 String  message =
                     "for RLE header string \"" + line
@@ -308,7 +317,7 @@ public class RLEInput
             int     yco     = Integer.parseInt( matcher.group( 2 ) );
             upperLeft = new Point( xco, yco );
             
-            String  str = matcher.group( 3 );
+            String  str = matcher.group( 4 );
             int     len = str.length();
             for ( int inx = 0 ; inx < len ; ++inx )
             {
@@ -316,7 +325,7 @@ public class RLEInput
                 survivalRules.add( Integer.parseInt( rule ) );
             }
             
-            str = matcher.group( 4 );
+            str = matcher.group( 6 );
             len  = str.length();
             for ( int inx = 0 ; inx < len ; ++inx )
             {

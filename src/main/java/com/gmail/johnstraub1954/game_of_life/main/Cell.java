@@ -34,9 +34,6 @@ public class Cell
      * Default constructor. X- and y-coordinates 
      * are explicitly set to 0;
      * isAlive is explicitly set to false;
-     * 
-     * @param xco   x-coordinate of this cell
-     * @param yco   y-coordinate of this cell
      */
     public Cell()
     {
@@ -205,7 +202,7 @@ public class Cell
      * 
      * @param   obj the given Object
      * 
-     * @returns true, if this Cell is equal to the given object
+     * @return true, if this Cell is equal to the given object
      */
     @Override
     public boolean equals( Object obj )

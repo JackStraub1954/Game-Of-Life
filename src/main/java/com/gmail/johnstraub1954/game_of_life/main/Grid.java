@@ -71,6 +71,8 @@ public class Grid extends JPanel implements PropertyChangeListener
     
     /**
      * Constructor.
+     * 
+     * @param   gridMap the map used to populate the grid
      */
     public Grid( GridMap gridMap )
     {

@@ -244,7 +244,7 @@ public class GridMap implements Iterable<Cell>
          * 
          * @return  the next Cell associated with this iterator
          * 
-         * @throws NoSuchElement exception if there is no next Cell
+         * @throws NoSuchElementException if there is no next Cell
          */
         @Override
         public Cell next() throws NoSuchElementException
@@ -265,6 +265,8 @@ public class GridMap implements Iterable<Cell>
          * Locates the "next" live cell that falls within the range
          * of the given rectangle.
          * Cells are not returned in any particular order.
+         * 
+         * @return the "next" live cell in the rectangle
          */
         private Cell nextCell()
         {

@@ -2,21 +2,59 @@ package com.gmail.johnstraub1954.game_of_life.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/**
+ * Decodes an input sequence consisting of count/character pairs.
+ * For example: 3obo$3b!
+ * A character not preceded by an explicit count
+ * is assumed to have an implicit count of 1.
+ * The input sequence may or may not consist of multiple lines.
+ * 
+ * Operations/services provided by the class are generally considered
+ * integral parts of decoding a full formatted RLE-style description
+ * of a Game of Life Pattern. It is broken into a separate class
+ * in order to facilitate testing.
+ * 
+ * @author Jack Straub
+ * 
+ * @see <a href=https://conwaylife.com/wiki/Run_Length_Encoded>
+ *          Run Length Encoded Files
+ *      </a>
+ */
 public class RLEGridDecoder implements Iterable<Character>
 {
-    private final List<String>      codes   = new ArrayList<>();
+    /**
+     * Regular expression for parsing input.
+     * It is non-greedy.
+     * Some of the things it will match are:
+     * <ul>
+     * <li>o</li>
+     * <li>b</li>
+     * <li>$</li>
+     * <li>!</li>
+     * <li>5o</li>
+     * <li>10b</li>
+     * <li>3$</li>
+     * </ul>
+     * It contains two groups: one to match a numeric prefix
+     * (if any) and the other to match the input character.
+     */
+    private static final String     regExp  = "(\\d*?)([$!\\D])";
+    private static final Pattern    pattern = Pattern.compile( regExp );
+
+    private final StringBuilder codes   = new StringBuilder();
     
     /**
      * Constructor.
      * Skips all blank lines and initial comments in the stream
      * indicated by a given stream reader.
      * Parses the input sequence contained in the stream
-     * (lines consisting of exclusively b, o, $ or !).
+     * (lines consisting of exclusively count/character pairs,
+     * such as 3o, 5b, b, o, $ or !).
      * The reader's cursor is left positioned at either
      * the first or second line after the end of the input sequence,
      * or at the end of the stream if there are no lines
@@ -60,13 +98,11 @@ public class RLEGridDecoder implements Iterable<Character>
                     String  fragment    = line.substring( 0, bangInx );
                     
                     // Add the start of the line ending with the !
-                    // if the line starts with a !, don't add anything
-                    if ( !fragment.isEmpty() )
-                        codes.add( fragment );
+                    codes.append( fragment );
                 }
                 else
                 {
-                    codes.add( line );
+                    codes.append( line );
                     line = reader.readLine();
                 }
             }
@@ -78,24 +114,28 @@ public class RLEGridDecoder implements Iterable<Character>
         
         // Make sure the list of lines contains at least one line,
         // and that the last line ends with a !.
-        int count   = codes.size();
+        int count   = codes.length();
         if ( count == 0 )
         {
-            codes.add( "!" );
+            codes.append( "!" );
         }
         else
         {
-            String  last    = codes.get( count - 1 );
-            codes.set( count - 1, last + "!" );
+            char    lastChar    = codes.charAt( count - 1 );
+            if ( lastChar != '!')
+                codes.append( '!' );
         }
     }
 
     /**
      * Returns an iterator that sequentially traverses
-     * the input sequence for a grid spec.
+     * the input sequence for a grid for a run length encoded
+     * specification. Count/character pairs are translated
+     * into multiple characters, so "5o" translates to "ooooo".
      * 
      * @return  an iterator that sequentially traverses
-     *          the input sequence for a grid spec
+     *          the input sequence for a 
+     *          run length encoded specification
      */
     @Override
     public Iterator<Character> iterator()
@@ -106,28 +146,27 @@ public class RLEGridDecoder implements Iterable<Character>
     
     private class CharIterator implements Iterator<Character>
     {
-        // The codes list contains at least one line,
+        // The codes string always ends in '!'
         // so codes.get( 0 ) is always in bounds.
-        // The last line of the codes list ends with !
-        
-        private int         lineInx     = 0;
-        private String      currLine    = null;
-        private int         charCount   = 0;
-        private int         charInx     = 0;
-        private Character   nextChar    = null;
+        private final String    toParse = codes.toString();
+        private final Matcher   matcher;
+        private int             charCount;
+        private char            nextChar;
         
         /**
          * Constructor.
          * 
-         * Precondition: the <em>codes</em> contains at least one element
+         * Precondition: the <em>codes</em> string
+         *               contains at least one character
          * 
-         * Precondition: the last line in the <em>codes</em> 
-         *               contains a '!'
+         * Precondition: the last character in the <em>codes</em> 
+         *               String '!'
          */
         public CharIterator()
         {
-            nextChar = nextChar();
-        }
+            matcher = pattern.matcher( toParse );
+            parseNext();
+}
 
         /**
          * Returns true if the input sequence has not been exhausted.
@@ -137,8 +176,8 @@ public class RLEGridDecoder implements Iterable<Character>
         @Override
         public boolean hasNext()
         {
-            boolean rval    = nextChar != null;
-            return rval;
+            boolean result  = charCount != 0;
+            return result;
         }
 
         /**
@@ -152,48 +191,52 @@ public class RLEGridDecoder implements Iterable<Character>
         @Override
         public Character next() throws NoSuchElementException
         {
-            if ( nextChar == null )
+            if ( charCount == 0 )
             {
-                String  message =
-                    "Iterator exhausted at line " + lineInx
-                    + ", character " + charInx;
+                String  message = "Iterator exhausted";
                 throw new NoSuchElementException( message );
             }
             
             Character   next    = nextChar;
-            nextChar = nextChar();
+            if ( --charCount == 0 )
+                parseNext();
             
             return next;
         }
         
         /**
-         * Returns the next character in the input sequence.
+         * Returns the next count/character pair 
+         * in the input sequence.
+         * Variable nextChar is set to <em>character</em>
+         * If the <em>count</em> element is not present
+         * charCount is set to 1, otherwise it is 
+         * set to <em>count</em>.
          * If the end of the input sequence is reached;
          * i.e., if the next character in the sequence is '!';
-         * null is returned.
+         * charCount is set to 0.
          * 
          * @return  the next character in the input sequence,
          *          or null if none
          */
-        private Character nextChar()
+        private void parseNext()
         {
-            if ( charInx >= charCount )
-            {
-                currLine = codes.get( lineInx++ );
-                charCount = currLine.length();
-                charInx = 0;
-                // The list of lines is never empty;
-                // no line in the list is ever empty;
-                // iteration is over when ! is detected;
-                // last line of list always ends with !;
-                // ... so currLine is never null; and
-                // ... currLine.charAt( 0 ) is always in bounds
-            }
+            // Since the last match (containing !) will terminate
+            // the iteration, matcher.find() will never fail.
+            matcher.find();
             
-            Character   result  = null;
-            if ( (result = currLine.charAt( charInx++ )) == '!' )
-                result = null;
-            return result;
+            // If there's a match there are always two groups present,
+            // one for the count and the other for the character.
+            // If the count is not present, its group contains the
+            // empty string.
+            charCount = 1;
+            String  strCount    = matcher.group( 1 );
+            if ( !strCount.isEmpty() )
+                charCount = Integer.parseInt( strCount );
+            
+            String  strChar     = matcher.group( 2 );
+            nextChar = strChar.charAt( 0 );
+            if ( nextChar == '!' )
+                charCount = 0;
         }
     }
 }

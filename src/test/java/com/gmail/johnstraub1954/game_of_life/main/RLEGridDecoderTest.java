@@ -36,8 +36,8 @@ class RLEGridDecoderTest
     {
         String  buff    =
             "b" + endl
-            + "5ooo$bbb10$obob$" + endl
-            + "ooo15bbb" + endl
+            + "ooo$bbb$obob$" + endl
+            + "ooobbb" + endl
             + "ooo$" + endl
             + "bbb!";
         testIterator( buff );
@@ -75,9 +75,9 @@ class RLEGridDecoderTest
         String  buff    =
             "#" + endl
             + "#5 comments" + endl
-            + "22b" + endl
+            + "b" + endl
             + "ooo$bbb$obob$" + endl
-            + "50ooobbb" + endl
+            + "ooobbb" + endl
             + "ooo$" + endl
             + "bbb";
         testIterator( buff );
@@ -162,6 +162,34 @@ class RLEGridDecoderTest
     }
 
     @Test
+    public void testCountCharacterPairs()
+    {
+        String          input       = "3ob5obo3b3$!";
+        String          expOutput   = "ooobooooobobbb$$$";
+        StringBuilder   actOutput   = new StringBuilder();
+        try (
+            ByteArrayInputStream    inStream        = 
+                new ByteArrayInputStream( input.getBytes() );
+            InputStreamReader       streamReader    =
+                new InputStreamReader( inStream );
+            BufferedReader          bufReader   =
+                new BufferedReader( streamReader );
+        )
+        {
+            RLEGridDecoder      decoder     = new RLEGridDecoder( bufReader );
+            Iterator<Character> iter        = decoder.iterator();
+            while ( iter.hasNext() )
+                actOutput.append( iter.next() );
+            
+            assertEquals( expOutput, actOutput.toString() );
+        }
+        catch ( IOException exc )
+        {
+            fail( "Unexpected IOException", exc );
+        }
+    }
+
+    @Test
     public void testAbuseIterator()
     {
         try (
@@ -179,7 +207,6 @@ class RLEGridDecoderTest
                 iter.next();
             
             assertThrows( NoSuchElementException.class, () -> iter.next() );
-
         }
         catch ( IOException exc )
         {
@@ -211,6 +238,12 @@ class RLEGridDecoderTest
         }
     }
 
+    /**
+     * This method does not work if the input contains counts.
+     * Eg., "bobobo$o!" is allowed but "3ob" is not.
+     * 
+     * @param buff  test input
+     */
     private void testIterator( String buff )
     {
         try (
