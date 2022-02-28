@@ -25,7 +25,7 @@ public class GOLConstants
      */
     public static final String  GRID_COLOR_PN       = "gridColor";
     /** Grid width default value. */
-    public static final String  GRID_COLOR_DV       = "0";
+    public static final String  GRID_COLOR_DV       = "0xEEEEEE";
 
     /** 
      * Grid margin top property name. 
@@ -129,7 +129,7 @@ public class GOLConstants
      */
     public static final String  GRID_CELL_SIZE_PN   = "gridCellSize";
     /** Grid line width default value. */
-    public static final String  GRID_CELL_SIZE_DV   = "10";
+    public static final String  GRID_CELL_SIZE_DV   = "4";
 
     /** 
      * Grid cell color property name. 
@@ -142,6 +142,26 @@ public class GOLConstants
     public static final String  GRID_CELL_COLOR_PN   = "gridCellColor";
     /** Grid line color default value. */
     public static final String  GRID_CELL_COLOR_DV   = "0";
+    
+    /** 
+     * The x- and y- coordinates of the cell to appear in the upper-left
+     * corner of the physical grid.
+     */
+    public static final String  GRID_CELL_ORIGIN_PN = "gridCellOrigin";
+    /** 
+     * The default value of the x- and y- coordinates of the cell to 
+     * appear in the upper-left corner of the physical grid.
+     * This consists of two integers separated by whitespace
+     * and/or a comma, for example: "100 200", "100,200", "100 , 200".
+     */
+    public static final String  GRID_CELL_ORIGIN_DV = "0 0";
+    
+    /** 
+     * The GridMap used in this game. It has no default value,
+     * and cannot be configured in a Properties file 
+     * or from the command line.
+     */
+    public static final String  GRID_MAP_PN          = "gridMap";
     
     ////////////////////////////////////////
     //
@@ -162,5 +182,42 @@ public class GOLConstants
      */
     public static final String  AUTO_REGEN_PACE_PN  = "autoRegenerationPace";
     /** Auto-regeneration pace, default value */
-    public static final String  AUTO_REGEN_PACE_DV  = "1";
+    public static final String  AUTO_REGEN_PACE_DV  = "4";
+    /** Minimum regeneration pace in generations per second */
+    public static final String  AUTO_REGEN_MIN_PN   = "autoRegeneratonMinPace";
+    /** Minimum regeneration pace default value*/
+    public static final String  AUTO_REGEN_MIN_DV   = ".1";
+    /** Maximum regeneration pace in generations per second */
+    public static final String  AUTO_REGEN_MAX_PN   = "autoRegeneratonMaxPace";
+    /** Maximum regeneration pace default value*/
+    public static final String  AUTO_REGEN_MAX_DV   = "25";
+
+    ////////////////////////////////////////
+    //
+    // CONTROL PROPERTIES
+    //
+    ////////////////////////////////////////
+    
+    /**  
+     * List of states under which a live cell may continue living.
+     * This is a sequence of integers separated by commas.
+     * Example: "2,3" a living cell with 2 or 3 neighbors will
+     * continue to live.
+     */
+    public static final String  CTRL_SURVIVAL_STATES_PN = "survivalStates";
+    /** Survival states, default value */
+    public static final String  CTRL_SURVIVAL_STATES_DV = "250";
+    /**  
+     * List of states under which a dead cell may become alive.
+     * This is a sequence of integers separated by commas.
+     * Example: "1,2" a living cell with 1 or 2 neighbors will
+     * will become alive.
+     */
+    public static final String  CTRL_BIRTH_STATES_PN    = "survivalStates";
+    /** Survival states, default value */
+    public static final String  CTRL_BIRTH_STATES_DV    = "3";
+    /** Center rectangle containing live cells in the grid. */
+    public static final String  CTRL_CENTER_PN           = "centerGrid";
+    /** Center rectangle containing live cells default value. */
+    public static final String  CTRL_CENTER_DV           = "false";
 }

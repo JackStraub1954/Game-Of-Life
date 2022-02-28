@@ -3,8 +3,9 @@ package app;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,66 +16,95 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.gmail.johnstraub1954.game_of_life.main.Cell;
+import com.gmail.johnstraub1954.game_of_life.main.GOLException;
 import com.gmail.johnstraub1954.game_of_life.main.Grid;
-import com.gmail.johnstraub1954.game_of_life.main.GridFrame;
 import com.gmail.johnstraub1954.game_of_life.main.GridMap;
 import com.gmail.johnstraub1954.game_of_life.main.Neighborhood;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
+import com.gmail.johnstraub1954.game_of_life.main.RLEGridDecoder;
+import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 
-public class ShowGrid
+public class RLEGridExerciser
 {
-    private static final List<Integer>  survivalStates  =
-        new ArrayList<>( Arrays.asList( 2, 3 ) );
-    private static final List<Integer>  birthStates  =
-        new ArrayList<>( Arrays.asList( 3 ) );
+    private static String          name;
+    private static String          author;
+    private static Point           origin;
+    private static List<Integer>   survivalStates;
+    private static List<Integer>   birthStates;
+    private static int             gameStates;
+    private static GridMap          gridMap;
     
-    private final GridMap   gridMap;
-    private final Grid      gridPanel;
-    
+    private static final Parameters params  = Parameters.INSTANCE;
+    private Grid    gridPanel;
+
+    public RLEGridExerciser()
+    {
+    }
+
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater( () -> new GridFrame().run() );
-    }
-    
-    public ShowGrid()
-    {
+        String      resourceName    = "GosperGlider.rle";
+        ClassLoader loader          = RLEInput.class.getClassLoader();
+        InputStream inStream        = 
+            loader.getResourceAsStream( resourceName );
+        if ( inStream == null )
+        {
+            String  message = 
+                "Failed to load rle file: " + resourceName;
+            throw new GOLException( message );
+        }
+        
+        RLEInput        input           = new RLEInput( inStream );
+        name            = input.getName();
+        author          = input.getAuthor();
+        origin          = input.getUpperLeft();
+        survivalStates  = input.getSurvivalRules();
+        birthStates     = input.getBirthRules();
+        gameStates      = input.getGameStates();
+        System.out.println( "name=" + name );
+        System.out.println( "author=" + author );
+        System.out.println( "origin=" + origin );
+        System.out.println( "survivalStates=" + survivalStates );
+        System.out.println( "birthStates=" + birthStates );
+        System.out.println( "gameStates=" + gameStates );
+        
+        RLEGridDecoder      decoder = input.getGridDecoder();
+        Iterator<Character> iter    = decoder.iterator();
         gridMap = new GridMap();
-        gridPanel = new Grid();
+        
+        int currX   = origin.x;
+        int currY   = origin.y;
+        while ( iter.hasNext() )
+        {
+            char    nextChar    = iter.next();
+            if ( nextChar == '$' )
+            {
+                ++currY;
+                currX = origin.x;
+            }
+            else
+            {
+                boolean state   = nextChar == 'o';
+                Cell    cell    = new Cell( currX++, currY, state );
+                gridMap.put( cell );
+            }
+        }
+        SwingUtilities.invokeLater( () -> new RLEGridExerciser().run() );
     }
 
     public void run()
     {
-        int startx  = 11;
-        int starty  = 21;
-        int width   = 15;
-        int height  = 20;
-        int lastrow = starty + height;
-        int lastcol = startx + width;
-        
-        for ( int col = startx, row = starty ; col <= lastcol ; ++col )
-        {
-            gridMap.put( col, row, true );
-            gridMap.put( col, lastrow, true );
-        }
-        
-        for ( int col = startx, row = starty ; row <= lastrow ; ++row )
-        {
-            gridMap.put( col, row, true );
-            gridMap.put( lastcol, row, true );
-        }
-//        gridMap.put( new Point( 50, 51 ), true );
-//        gridMap.put( new Point( 50, 52 ), true );
-//        gridMap.put( new Point( 50, 53 ), true );
-//        
-//        gridMap.put( new Point( 60, 50 ), true );
-//        gridMap.put( new Point( 61, 50 ), true );
-//        gridMap.put( new Point( 62, 50 ), true );
-//        gridMap.put( new Point( 59, 51 ), true );
-//        gridMap.put( new Point( 60, 51 ), true );
-//        gridMap.put( new Point( 61, 51 ), true );
-        
         JFrame  frame   = new JFrame( "Show Grid" );
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        
+        params.setGridMap(gridMap);
+        gridPanel = new Grid();
+        params.setGridCellOrigin( origin );
+        for ( Cell cell : gridMap )
+        {
+            if ( cell.isAlive() )
+                System.out.println( cell );
+        }
         
         JPanel  contentPane = new JPanel( new BorderLayout() );
         contentPane.add( new OuterPanel(), BorderLayout.CENTER );
@@ -127,8 +157,11 @@ public class ShowGrid
         {
             setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
             JButton next    = new JButton( "Next Generation" );
+            JButton run     = new JButton( "run" );
             add( next );
+            add( run );
             next.addActionListener( e -> propagate() );
+            run.addActionListener( e -> startAnimation() );
         }
         
         private void propagate()
@@ -148,6 +181,29 @@ public class ShowGrid
             for ( Cell modifiedCell : cellsToModify )
                 gridMap.put( modifiedCell );
             gridPanel.repaint();
+        }
+        
+        private void startAnimation()
+        {
+            Thread  thread  = new Thread( () -> animate() );
+            thread.start();
+        }
+        
+        private void animate()
+        {
+            long    interval    = 64;
+            while ( true )
+            {
+                try
+                {
+                    Thread.sleep( interval );
+                    propagate();
+                }
+                catch ( InterruptedException exc )
+                {
+                    
+                }
+            }
         }
     }
 }

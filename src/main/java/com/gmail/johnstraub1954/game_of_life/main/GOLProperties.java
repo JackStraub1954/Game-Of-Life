@@ -1,11 +1,13 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.*;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_DV;
@@ -30,6 +32,9 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_PN;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -201,6 +206,12 @@ public class GOLProperties extends Properties
         return color;
     }
     
+    public Point getGridCellOrigin()
+    {
+        Point   origin  = getPoint( GRID_CELL_ORIGIN_PN, GRID_CELL_ORIGIN_DV );
+        return origin;
+    }
+    
     /**
      * Obtains the value of the AUTO-REGENERATION ON property.
      * 
@@ -214,13 +225,79 @@ public class GOLProperties extends Properties
     
     /**
      * Obtains the value of the AUTO-REGENERATION PACE property.
+     * Specifies generations per second.
      * 
      * @return the value of the AUTO-REGENERATION PACE property.
      */
     public float getAutoRegenPace()
     {
-        float   pace    = getFloat( AUTO_REGEN_PACE_PN, AUTO_REGEN_PACE_DV );
+        float    pace    = getFloat( AUTO_REGEN_PACE_PN, AUTO_REGEN_PACE_DV );
         return pace;
+    }
+    
+    /**
+     * Obtains the value of the AUTO-REGENERATION MINIMUM PACE property.
+     * Specifies generations per second.
+     * 
+     * @return the value of the AUTO-REGENERATION MINIMUM PACE property
+     */
+    public float getAutoRegenPaceMin()
+    {
+        float   pace    = getFloat( AUTO_REGEN_MIN_PN, AUTO_REGEN_MIN_DV );
+        return pace;
+    }
+    
+    /**
+     * Obtains the value of the AUTO-REGENERATION MAXIMUM PACE property.
+     * Specifies generations per second.
+     * 
+     * @return the value of the AUTO-REGENERATION MAXIMUM PACE property
+     */
+    public float getAutoRegenPaceMax()
+    {
+        float   pace    = getFloat( AUTO_REGEN_MAX_PN, AUTO_REGEN_MAX_DV );
+        return pace;
+    }
+    
+    /**
+     * Gets a value that indicates whether the grid should attempt
+     * to center the live cells in its display.
+     * 
+     * @return  a value that indicates whether the grid should attempt
+     *          to center the live cells in its display
+     */
+    public boolean getCenterGrid()
+    {
+        boolean center  = getBoolean( CTRL_CENTER_PN, CTRL_CENTER_DV );
+        return center;
+    }
+    
+    /**
+     * Gets the list of states that determines whether
+     * a live cell survives into the next generation.
+     * 
+     * @return  the list of states that determines whether
+     *          a live cell survives into the next generation
+     */
+    public List<Integer> getSurvivalStates()
+    {
+        List<Integer>   list    = 
+            getIntegerList( CTRL_SURVIVAL_STATES_PN, CTRL_SURVIVAL_STATES_DV );
+        return list;
+    }
+    
+    /**
+     * Gets the list of states that determines whether
+     * a dead cell comes alive in the next generation.
+     * 
+     * @return  the list of states that determines whether
+     *          a dead cell comes alive in the next generation
+     */
+    public List<Integer> getBirthStates()
+    {
+        List<Integer>   list    = 
+            getIntegerList( CTRL_BIRTH_STATES_PN, CTRL_BIRTH_STATES_DV );
+        return list;
     }
 
     /**
@@ -422,6 +499,52 @@ public class GOLProperties extends Properties
     }   
     
     /**
+     * Parses a string property into a Point, and return the Point.
+     * The format of the input string consists of two integers
+     * separated by whitespace and/or comma.
+     * 
+     * @param name      the name of the property to retrieve
+     * @param defValue  the default value to use if the property name
+     *                  can't be found
+     * @return  a Point, consisting of an x- and y-coordinate
+     * @throws IllegalArgumentException if defValue is null
+     * @throws GOLException if the property string cannot be properly parsed
+     */
+    public Point getPoint( String name, String defValue )
+        throws IllegalArgumentException, GOLException
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        
+        String      strValue    = getProperty( name, defValue );
+        String[]    strCoords   = strValue.split( "[\\s,]" );
+        if ( strCoords.length != 2 )
+        {
+            String  message = 
+                "Value is not a point;"
+                + "expected: \"x, y\""
+                + "actual: \"strValue\"";
+            throw new GOLException( message );
+        }
+        Point   point   = new Point();
+        try
+        {
+            point.x = Integer.parseInt( strCoords[0] );
+            point.y = Integer.parseInt( strCoords[1] );
+        }
+        catch ( NumberFormatException exc )
+        {
+            String  message = "Invalid integers: " + strValue;
+            throw new GOLException( message, exc );
+        }
+            
+        return point;
+    }   
+    
+    /**
      * Obtains the value of a property and converts it to a float.
      * 
      * @param name      the name of the property to obtain
@@ -457,4 +580,43 @@ public class GOLProperties extends Properties
         
         return num;
     }   
+    
+    /**
+     * Obtains the value of a property and converts it to a list
+     * of Integers.
+     * 
+     * @param name      the name of the property to obtain
+     * @param defValue  the default value to use if the property name
+     *                  can't be found
+     *                  
+     * @return the named property converted to a a list of Integers.
+     * 
+     * @throws IllegalArgumentException if <em>defValue</em> is null
+     * @throws GOLException if the value to parse is not a valid point
+     */
+    public List<Integer> getIntegerList( String name, String defValue )
+        throws IllegalArgumentException, GOLException
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        List<Integer>   list    = new ArrayList<>();
+        String          value   = getProperty( name, defValue );
+        String[]        strNums = value.split( "," );
+        try
+        {
+            for ( String num : strNums )
+                list.add( Integer.parseInt( num ) );
+        }
+        catch ( NumberFormatException exc )
+        {
+            String  message = 
+                "\"" + value + "\" is not a list of integers";
+            throw new   GOLException( message, exc );
+        }
+        
+        return list;
+    }
 }

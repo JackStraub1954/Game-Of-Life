@@ -1,10 +1,35 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MAX_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MIN_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_HEIGHT_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_WIDTH_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MAP_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_BOTTOM_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_LEFT_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_RIGHT_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_TOP_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_PN;
+
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides a single point of access to parameters
@@ -27,6 +52,12 @@ public enum Parameters
     /** Pace of automatic regeneration, in generations per second */
     private float               autoRegenerationPace;
     
+    /** Auto-regeneration minimum value (generations per second) */
+    private float               autoRegenerationPaceMin;
+    
+    /** Auto-regeneration maximum value (generations per second) */
+    private float               autoRegenerationPaceMax;
+
     /** Background color of the grid */
     private Color               gridColor;
     /** Top margin of grid */
@@ -53,10 +84,34 @@ public enum Parameters
     private int                 gridCellSize;
     /** Grid cell color (for live cells) */
     private Color               gridCellColor;
+    /** 
+     * The coordinates of the cell to place in the upper-left corner
+     * of the physical grid.
+     */
+    private Point               gridCellOrigin;
+    /** Indicates whether the grid should attempt to center its live cells. */
+    private boolean             gridCenter;
+
+    /** 
+     * Grid map
+     */
+    private GridMap             gridMap;
+    
+    /** 
+     * Conditions under which a live cell may continue to live.
+     */
+    private List<Integer>       survivalStates;
+    /** 
+     * Conditions under which a dead cell may come to life.
+     */
+    private List<Integer>       birthStates;
     
     /** Support for PropertyChangeListeners */
     private final PropertyChangeSupport propChangeSupport   = 
         new PropertyChangeSupport( this );
+    
+    /** List of ActionListeners */
+    private final List<ActionListener>  actionListeners = new ArrayList<>();
 
     /**
      * Constructor.
@@ -66,6 +121,9 @@ public enum Parameters
         GOLProperties   props   = new GOLProperties();
         autoRegenerationOn = props.getAutoRegenOn();
         autoRegenerationPace = props.getAutoRegenPace();
+        autoRegenerationPaceMin = props.getAutoRegenPaceMin();
+        autoRegenerationPaceMax = props.getAutoRegenPaceMax();
+        
         gridColor = props.getGridColor();
         gridMarginTop = props.getGridMarginTop();
         gridMarginLeft = props.getGridMarginLeft();
@@ -78,6 +136,13 @@ public enum Parameters
         gridLineColor = props.getGridLineColor();
         gridCellSize = props.getGridCellSize();
         gridCellColor = props.getGridCellColor();
+        gridCellOrigin = props.getGridCellOrigin();
+        gridCenter = props.getCenterGrid();
+        
+        survivalStates = props.getSurvivalStates();
+        birthStates = props.getBirthStates();
+        
+        gridMap = null;
     }
     
     /**
@@ -134,6 +199,28 @@ public enum Parameters
     {
         propChangeSupport.removePropertyChangeListener( propName, listener );
     }
+    
+    /**
+     * Add a given ActionListener to the list of ActionListeners.
+     * 
+     * @param listener  the given ActionListener
+     */
+    public void addActionListener( ActionListener listener )
+    {
+        actionListeners.add( listener );
+    }
+    
+    /**
+     * Removes a given ActionListener from the list of ActionListener.
+     * If the ActionListener is not in the list
+     * no action is taken.
+     * 
+     * @param listener  the given ActionListener
+     */
+    public void removeActionListener( ActionListener listener )
+    {
+        actionListeners.remove( listener );
+    }
 
     /**
      * Gets the autoRegenerationOn parameter.
@@ -164,7 +251,7 @@ public enum Parameters
      * 
      * @return the autoRegenerationPace
      */
-    public double getAutoRegenerationPace()
+    public float getAutoRegenerationPace()
     {
         return autoRegenerationPace;
     }
@@ -181,6 +268,56 @@ public enum Parameters
         this.autoRegenerationPace = autoRegenerationPace;
         propChangeSupport.
             firePropertyChange( propName, oldVal, autoRegenerationPace );
+    }
+
+    /**
+     * Gets the auto-regeneration minimum pace parameter.
+     * 
+     * @return the auto-regeneration minimum pace 
+     */
+    public float getAutoRegenerationPaceMin()
+    {
+        return autoRegenerationPaceMin;
+    }
+
+    /**
+     * Sets the auto-regeneration minimum pace parameter.
+     * 
+     * @param autoRegenerationPaceMin the autoRegenerationPace to set
+     */
+    public void setAutoRegenerationPaceMin( float pace )
+    {
+        float   oldVal      = this.autoRegenerationPaceMin;
+        float   newVal      = pace;
+        String  propName    = AUTO_REGEN_MIN_PN;
+        this.autoRegenerationPaceMin = pace;
+        propChangeSupport.
+            firePropertyChange( propName, oldVal, newVal );
+    }
+
+    /**
+     * Gets the auto-regeneration maximum pace parameter.
+     * 
+     * @return the auto-regeneration maximum pace 
+     */
+    public float getAutoRegenerationPaceMax()
+    {
+        return autoRegenerationPaceMax;
+    }
+
+    /**
+     * Sets the auto-regeneration maximum pace parameter.
+     * 
+     * @param autoRegenerationPaceMin the auto-regeneration maximum pace
+     */
+    public void setAutoRegenerationPaceMax(float pace )
+    {
+        float   oldVal      = this.autoRegenerationPaceMax;
+        float   newVal      = pace;
+        String  propName    = AUTO_REGEN_MAX_PN;
+        this.autoRegenerationPaceMax = pace;
+        propChangeSupport.
+            firePropertyChange( propName, oldVal, newVal );
     }
 
     /**
@@ -479,5 +616,143 @@ public enum Parameters
         this.gridCellColor = gridCellColor;
         propChangeSupport.
             firePropertyChange( propName, oldVal, newVal );
+    }
+    
+    /**
+     * Gets the GridMap managed by this Parameters object.
+     * If the parameter has not been set by the user,
+     * it is initialized to an empty map.
+     * 
+     * @return the GridMap managed by this Parameters object
+     */
+    public GridMap getGridMap()
+    {
+        if ( gridMap == null )
+            gridMap = new GridMap();
+        return gridMap;
+    }
+    
+    /**
+     * Sets the GridMap managed by this Parameters object.
+     * 
+     * @return the GridMap managed by this Parameters object
+     */
+    public void setGridMap( GridMap gridMap )
+    {
+        GridMap oldVal      = this.gridMap;
+        GridMap newVal      = gridMap;
+        String  propName    = GRID_MAP_PN;
+        this.gridMap = gridMap;
+        propChangeSupport.
+            firePropertyChange( propName, oldVal, newVal );
+    }
+    
+    /**
+     * Gets the list of survival states that controls the state
+     * of cells in the next generation.
+     * 
+     * @return list of survival states
+     */
+    public List<Integer> getSurvivalStates()
+    {
+        return survivalStates;
+    }
+    
+    /**
+     * Gets the list of survival states that controls the state
+     * of cells in the next generation.
+     * 
+     * @param   list of survival states
+     */
+    public void setSurvivalStates( List<Integer> survivalStates )
+    {
+        List<Integer>   oldVal      = this.survivalStates;
+        List<Integer>   newVal      = survivalStates;
+        String          propName    = CTRL_SURVIVAL_STATES_PN;
+        this.survivalStates = survivalStates;
+        propChangeSupport.
+            firePropertyChange( propName, oldVal, newVal );
+    }
+    
+    /**
+     * Gets the list of birth states that controls the state
+     * of cells in the next generation.
+     * 
+     * @return list of birth states
+     */
+    public List<Integer> getBirthStates()
+    {
+        return birthStates;
+    }
+    
+    /**
+     * Sets the list of birth states that controls the state
+     * of cells in the next generation.
+     * 
+     * @param   list of birth states
+     */
+    public void setBirthStates( List<Integer> birthStates )
+    {
+        List<Integer>   oldVal      = this.birthStates;
+        List<Integer>   newVal      = birthStates;
+        String          propName    = CTRL_BIRTH_STATES_PN;
+        this.birthStates = birthStates;
+        propChangeSupport.
+            firePropertyChange( propName, oldVal, newVal );
+    }
+    
+    public Point getGridCellOrigin()
+    {
+        return gridCellOrigin;
+    }
+    
+    public void setGridCellOrigin( Point gridCellOrigin )
+    {
+        Point   oldValue    = this.gridCellOrigin;
+        Point   newValue    = gridCellOrigin;
+        String  propName    = GRID_CELL_ORIGIN_PN;
+        this.gridCellOrigin = gridCellOrigin;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Gets a value that indicates if the the grid should attempt
+     * to center its live cells.
+     * 
+     * @return the value described above
+     */
+    public boolean isGridCenter()
+    {
+        return gridCenter;
+    }
+
+    /**
+     * Sets a value that indicates if the the grid should attempt
+     * to center its live cells.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.CTRL_CENTER_PN.
+     * 
+     * @param gridCenter    true to center the grid
+     */
+    public void setGridCenter( boolean gridCenter )
+    {
+        Boolean oldValue    = this.gridCenter;
+        Boolean newValue    = gridCenter;
+        String  propName    = CTRL_CENTER_PN;
+        this.gridCenter = gridCenter;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Fires an ActionEvent to ActionListeners.
+     */
+    public void reset()
+    {
+        ActionEvent event   =
+            new ActionEvent( this, ActionEvent.ACTION_PERFORMED, null );
+        for ( ActionListener listener : actionListeners )
+            listener.actionPerformed( event );
     }
 }

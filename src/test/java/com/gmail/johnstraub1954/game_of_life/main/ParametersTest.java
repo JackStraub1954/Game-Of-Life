@@ -4,11 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -201,6 +204,20 @@ class ParametersTest
         params.removePropertyChangeListener( name, tester1 );
         params.setGridCellSize( oldVal );
         assertEquals( 0, propUnderTestCount );
+    }
+    
+    @Test
+    void testAddRemoveActionListener()
+    {
+        ActionListenerTester    listener    = new ActionListenerTester();
+        
+        params.addActionListener( listener );
+        params.reset();
+        listener.test( true, params );
+        listener.reset();
+        params.removeActionListener( listener );
+        params.reset();
+        listener.test( false, null );
     }
 
     @Test
@@ -536,7 +553,189 @@ class ParametersTest
         assertEquals( oldVal, propUnderTestOldVal );
         assertEquals( newVal, propUnderTestNewVal );
         assertEquals( name, propUnderTestName );
-        assertEquals( params.getGridCellColor(), newVal );
+        assertEquals( newVal, params.getGridCellColor() );
+    }
+    
+    @Test
+    public void testSetGetAutoRegenerationPaceMin()
+    {
+        float   oldVal  = params.getAutoRegenerationPaceMin();
+        float   newVal  = 2 * oldVal + 2;
+        String  name    = GOLConstants.AUTO_REGEN_MIN_PN;
+        
+        params.setAutoRegenerationPaceMin( oldVal );
+        assertNull( propUnderTestName );
+        assertEquals( oldVal, params.getAutoRegenerationPaceMin() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setAutoRegenerationPaceMin( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof Float );
+        assertTrue( propUnderTestNewVal instanceof Float );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getAutoRegenerationPaceMin() );
+    }
+    
+    @Test
+    public void testSetGetAutoRegenerationPaceMax()
+    {
+        float   oldVal  = params.getAutoRegenerationPaceMax();
+        float   newVal  = 2 * oldVal + 2;
+        String  name    = GOLConstants.AUTO_REGEN_MAX_PN;
+        
+        params.setAutoRegenerationPaceMax( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.getAutoRegenerationPaceMax() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setAutoRegenerationPaceMax( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof Float );
+        assertTrue( propUnderTestNewVal instanceof Float );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getAutoRegenerationPaceMax() );
+    }
+    
+    @Test
+    public void testSetGetGridMap()
+    {
+        GridMap oldVal  = params.getGridMap();
+        GridMap newVal  = new GridMap();
+        String  name    = GOLConstants.GRID_MAP_PN;
+        
+        // the value returned by getGridMap must never be null
+        assertNotNull( oldVal );
+        params.setGridMap( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.getGridMap() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setGridMap( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof GridMap );
+        assertTrue( propUnderTestNewVal instanceof GridMap );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getGridMap() );
+    }
+    
+    @Test
+    public void testSetGetSurvivalStates()
+    {
+        List<Integer>   oldVal  = params.getSurvivalStates();
+        List<Integer>   newVal  = new ArrayList<>();
+        String          name    = GOLConstants.CTRL_SURVIVAL_STATES_PN;
+        
+        params.setSurvivalStates( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.getSurvivalStates() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setSurvivalStates( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof List<?> );
+        assertTrue( propUnderTestNewVal instanceof List<?> );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getSurvivalStates() );
+    }
+    
+    @Test
+    public void testSetGetBirthStates()
+    {
+        List<Integer>   oldVal  = params.getBirthStates();
+        List<Integer>   newVal  = new ArrayList<>();
+        String          name    = GOLConstants.CTRL_BIRTH_STATES_PN;
+        
+        params.setBirthStates( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.getBirthStates() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setBirthStates( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof List<?> );
+        assertTrue( propUnderTestNewVal instanceof List<?> );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getBirthStates() );
+    }
+    
+    @Test
+    public void testSetGetGridCellOrigin()
+    {
+        Point   oldVal  = params.getGridCellOrigin();
+        Point   newVal  = new Point( oldVal.x + 5, oldVal.y + 5 );
+        String  name    = GOLConstants.GRID_CELL_ORIGIN_PN;
+        
+        params.setGridCellOrigin( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.getGridCellOrigin() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setGridCellOrigin( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof Point );
+        assertTrue( propUnderTestNewVal instanceof Point );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.getGridCellOrigin() );
+    }
+    
+    @Test
+    public void testSetGetGridCenter()
+    {
+        boolean oldVal  = params.isGridCenter();
+        boolean newVal  = !oldVal;
+        String  name    = GOLConstants.CTRL_CENTER_PN;
+        
+        params.setGridCenter( oldVal );
+        assertNull( propUnderTestName );
+        assertNull( propUnderTestOldVal );
+        assertNull( propUnderTestNewVal );
+        assertEquals( oldVal, params.isGridCenter() );
+        
+        PropChangeTester    tester  = getPropChangeTester();
+        params.addPropertyChangeListener( name, tester );
+        params.setGridCenter( newVal );
+        assertNotNull( propUnderTestOldVal );
+        assertNotNull( propUnderTestNewVal );
+        assertTrue( propUnderTestOldVal instanceof Boolean );
+        assertTrue( propUnderTestNewVal instanceof Boolean );
+        assertEquals( oldVal, propUnderTestOldVal );
+        assertEquals( newVal, propUnderTestNewVal );
+        assertEquals( name, propUnderTestName );
+        assertEquals( newVal, params.isGridCenter() );
     }
     
     private PropChangeTester getPropChangeTester()
@@ -556,6 +755,30 @@ class ParametersTest
             propUnderTestName = evt.getPropertyName();
             ++propUnderTestCount;
         }
+    }
+    
+    private class ActionListenerTester implements ActionListener
+    {
+        private boolean invoked = false;
+        private Object  source  = null;
         
+        @Override
+        public void actionPerformed( ActionEvent evt )
+        {
+            invoked = true;
+            source = evt.getSource();
+        }
+        
+        public void test( boolean expInvoked, Object expSource )
+        {
+            assertEquals( expInvoked, invoked );
+            assertEquals( expSource, source );
+        }
+        
+        public void reset()
+        {
+            invoked = false;
+            source = null;
+        }
     }
 }

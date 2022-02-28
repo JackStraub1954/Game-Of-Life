@@ -23,7 +23,8 @@ public class GridParserExerciser2
         "x\\s*=\\s*(\\d+)\\s*,*\\s*"
         + "y\\s*=\\s*(\\d+)\\s*,*"
         + "\\s*rule\\s*=\\s*"
-        + "([sb]){0,1}(\\d+)\\s*/\\s*([sb]){0,1}(\\d+)";
+        + "([sb])?(\\d+)\\s*/\\s*([sb])?(\\d+)"
+        + "\\s*(?:/\\s*(\\d+))?";
     private static final Pattern    pattern2 = Pattern.compile( ruleRegEx2 );
     
     private static int count = 0;
@@ -53,6 +54,19 @@ public class GridParserExerciser2
             "x = 5   y = 10   rule = b23/s3",
         };
         for ( String line : lines2 )
+            testRegExp2( line );
+        
+        System.out.println( endl + "***********************" );
+        
+        String[]    lines3  =
+        {
+            "x = 5   y = 10   rule = 23/3/4",
+            "x = 5   y = 10   rule = 23 / 3 / 5",
+            "x = 5   y = 10   rule = s23 / b3 / 5",
+            "x = 5   y = 10   rule = s23/b3/5",
+            "x = 5   y = 10   rule = b23/s3/5",
+        };
+        for ( String line : lines3 )
             testRegExp2( line );
     }
     

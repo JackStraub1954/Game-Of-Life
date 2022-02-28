@@ -30,15 +30,19 @@ public class RLEInputExerciser
             throw new GOLException( message );
         }
         
-        RLEInput        input       = new RLEInput( inStream );
-        String          name        = input.getName();
-        String          author      = input.getAuthor();
-        Point           origin      = input.getUpperLeft();
-        List<Integer>   survival    = input.getSurvivalRules();
-        List<Integer>   birth       = input.getBirthRules();
-        String          fmt         = 
-            "Name=%s,author=%s,origin=%s,surv=%s,birth=%s%n";
-        System.out.printf( fmt, name, author, origin, survival, birth );
+        RLEInput        input           = new RLEInput( inStream );
+        String          name            = input.getName();
+        String          author          = input.getAuthor();
+        Point           origin          = input.getUpperLeft();
+        List<Integer>   survivalStates  = input.getSurvivalRules();
+        List<Integer>   birthStates     = input.getBirthRules();
+        int             gameStates      = input.getGameStates();
+        System.out.println( "name=" + name );
+        System.out.println( "author=" + author );
+        System.out.println( "origin=" + origin );
+        System.out.println( "survivalStates=" + survivalStates );
+        System.out.println( "birthStates=" + birthStates );
+        System.out.println( "gameStates=" + gameStates );
         
         RLEGridDecoder      decoder = input.getGridDecoder();
         Iterator<Character> iter    = decoder.iterator();

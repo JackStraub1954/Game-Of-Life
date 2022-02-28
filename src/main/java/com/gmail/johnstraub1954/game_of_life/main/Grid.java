@@ -1,21 +1,16 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_HEIGHT_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_WIDTH_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_BOTTOM_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_LEFT_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_RIGHT_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_TOP_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_PN;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -24,7 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
@@ -44,23 +38,20 @@ public class Grid extends JPanel implements PropertyChangeListener
     
     private final   Parameters  params              = Parameters.INSTANCE;
     
-    private final   GridMap     gridMap; 
+    private GridMap         gridMap             = params.getGridMap(); 
     
     private Color           gridColor           = params.getGridColor();
-    private int             gridMarginTop       = params.getGridMarginTop();
-    private int             gridMarginLeft      = params.getGridMarginLeft();
-    private int             gridMarginBottom    = params.getGridMarginBottom();
-    private int             gridMarginRight     = params.getGridMarginRight();
-    private int             gridWidth           = params.getGridWidth();
-    private int             gridHeight          = params.getGridHeight();
     private boolean         gridLineShow        = params.isGridLineShow();
     private int             gridLineWidth       = params.getGridLineWidth();
     private Color           gridLineColor       = params.getGridLineColor();
     private int             gridCellSize        = params.getGridCellSize();
     private Color           gridCellColor       = params.getGridCellColor();
     
-    private int             gridCellTopX        = 10;
-    private int             gridCellTopY        = 20;
+    private boolean         gridCellCenter      = params.isGridCenter();
+    private Point           gridCellTop         = params.getGridCellOrigin();
+    private Point           gridCellULC         = calculateULC();
+//    private int             gridCellTopX        = 10;
+//    private int             gridCellTopY        = 20;
     
     /**
      * Graphics context for use during painting.
@@ -70,18 +61,12 @@ public class Grid extends JPanel implements PropertyChangeListener
     private Graphics2D  gtx                 = null;
     
     /**
-     * Constructor.
-     * 
-     * @param   gridMap the map used to populate the grid
+     * Default constructor.
      */
-    public Grid( GridMap gridMap )
+    public Grid()
     {
-        this.gridMap = gridMap;
         params.addPropertyChangeListener( this );
-//        Dimension   preferredSize   = 
-//            new Dimension( gridWidth * gridCellSize, gridHeight * gridCellSize );
-//            new Dimension( 750, 750 );
-//        setPreferredSize( preferredSize );
+        params.addActionListener( e -> repaint() );
     }
 
     @Override
@@ -93,24 +78,6 @@ public class Grid extends JPanel implements PropertyChangeListener
         {
         case GRID_COLOR_PN:
             gridColor = (Color)newValue;
-            break;
-        case GRID_MARGIN_TOP_PN:
-            gridMarginTop = (Integer)newValue;
-            break;
-        case GRID_MARGIN_LEFT_PN:
-            gridMarginLeft = (Integer)newValue;
-            break;
-        case GRID_MARGIN_BOTTOM_PN:
-            gridMarginBottom = (Integer)newValue;
-            break;
-        case GRID_MARGIN_RIGHT_PN:
-            gridMarginRight = (Integer)newValue;
-            break;
-        case GRID_WIDTH_PN:
-            gridWidth = (Integer)newValue;
-            break;
-        case GRID_HEIGHT_PN:
-            gridHeight = (Integer)newValue;
             break;
         case GRID_LINE_SHOW_PN:
             gridLineShow = (Boolean)newValue;
@@ -127,6 +94,13 @@ public class Grid extends JPanel implements PropertyChangeListener
         case GRID_CELL_COLOR_PN:
             gridCellColor = (Color)newValue;
             break;
+        case GRID_CELL_ORIGIN_PN:
+            gridCellULC = (Point)newValue;
+            break;
+        case CTRL_CENTER_PN:
+            gridCellCenter = (boolean)newValue;
+            gridCellULC = calculateULC();
+            break;
         default:
             break;
         }
@@ -136,31 +110,54 @@ public class Grid extends JPanel implements PropertyChangeListener
     public void paintComponent( Graphics graphics )
     {
         super.paintComponent( graphics );
+        gridCellULC = calculateULC();
         gtx = (Graphics2D)graphics.create();
         gtx.setRenderingHint( 
             RenderingHints.KEY_ANTIALIASING, 
             RenderingHints.VALUE_ANTIALIAS_ON
         );
         
+        int width   = getWidth();
+        int height  = getHeight();
+        gtx.setColor( gridColor );
+        gtx.fillRect( 0,  0, width, height );
+        
         if ( gridLineShow )
         {
             Stroke  stroke  = new BasicStroke( gridLineWidth );
             gtx.setStroke( stroke );
-            gtx.setColor( gridColor );
+            gtx.setColor( gridLineColor );
             GridLineIterator    iter    = new GridLineIterator();
             while ( iter.hasNext() )
                 gtx.draw( iter.next() );
         }
         
         gtx.setColor( gridCellColor );
-        Point               baseCell    = 
-            new Point( gridCellTopX, gridCellTopY );
-        LiveCellIterator    cellIter    = new LiveCellIterator( baseCell );
+        LiveCellIterator    cellIter    = 
+            new LiveCellIterator( gridCellULC );
         while ( cellIter.hasNext() )
             gtx.fill( cellIter.next() );
         
         gtx.dispose();
         gtx = null;
+    }
+    
+    private Point calculateULC()
+    {
+        Point   topLeft = gridCellTop;
+        if ( gridCellCenter )
+        {
+            Rectangle   rect    = gridMap.getLiveRectangle();
+            int         centerX = rect.x + rect.width / 2;
+            int         centerY = rect.y + rect.height / 2;
+            int         width   = getWidth() / gridCellSize;
+            int         height  = getHeight() / gridCellSize;
+            int         xco     = centerX - width / 2;
+            int         yco     = centerY - height / 2;
+            topLeft = new Point( xco, yco );
+        }
+        
+        return topLeft;
     }
     
     private class GridLineIterator implements Iterator<Line2D>
