@@ -1,9 +1,21 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.*;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MAX_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MAX_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MIN_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MIN_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_DV;
@@ -33,6 +45,8 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH
 
 import java.awt.Color;
 import java.awt.Point;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -298,6 +312,17 @@ public class GOLProperties extends Properties
         List<Integer>   list    = 
             getIntegerList( CTRL_BIRTH_STATES_PN, CTRL_BIRTH_STATES_DV );
         return list;
+    }
+    
+    /**
+     * Gets the URL of the data to display in the grid.
+     * 
+     * @return  the URL of the data to display in the grid
+     */
+    public URL getGridURL()
+    {
+        URL url = getURL( CTRL_GRID_URL_PN, CTRL_GRID_URL_DV );
+        return url;
     }
 
     /**
@@ -618,5 +643,43 @@ public class GOLProperties extends Properties
         }
         
         return list;
+    }
+    
+    /**
+     * Obtains the value of a property and converts it to a URL.
+     * Returns null if the property value is null or an empty string.
+     * 
+     * @param name      the name of the property
+     * @param defValue  the default value of the property; may not be null
+     * 
+     * @return the converted URL
+     * 
+     * @throws IllegalArgumentException if defValue is null
+     * @throws IllegalStateException    if the property value
+     *      cannot be converted to a URL.
+     */
+    public  URL getURL( String name, String defValue )
+        throws IllegalArgumentException, IllegalStateException
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        String      value   = getProperty( name, defValue ).trim();
+        URL         url     = null;
+        if ( value != null && !value.isEmpty() )
+        {
+            try
+            {
+                url = new URL( value );
+            }
+            catch ( MalformedURLException exc )
+            {
+                String  message = "\"" + value + "\" invalid URL";
+                throw new IllegalStateException( message, exc );
+            }
+        }
+        return url;
     }
 }

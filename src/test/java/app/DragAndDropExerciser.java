@@ -14,7 +14,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -91,8 +97,10 @@ public class DragAndDropExerciser
                 if ( list.size() > 0 && list.get( 0 ) instanceof File )
                 {
                     File    file    = (File)list.get( 0 );
-                    textField.setText( file.toString() );
-                    dumpFile ( file );
+                    URL     url     = getLocation( file );
+                    String  text    = url == null ? "null" : url.toString();
+                    textField.setText( text );
+                    dumpFileToo( file );
                     Object  src = evt.getSource();
                     System.out.println( src );
                     for ( Object item : list )
@@ -109,19 +117,100 @@ public class DragAndDropExerciser
         }
     }
     
-    private void dumpFile( File file )
+    private URL getLocation( File file )
     {
+        URL url = null;
+        try
+        {
+            if ( file.getName().toLowerCase().endsWith( ".url" ) )
+                url = parseURL( file );
+            else
+            {
+                URI uri = file.toURI();
+                url = uri.toURL();
+                System.out.println( "########## " + uri + ", " + url );
+                // Note: file.URL is deprecated
+            }
+        }
+        catch ( MalformedURLException exc )
+        {
+            exc.printStackTrace();
+            System.exit( 1 );
+        }
+        
+        return url;
+    }
+    
+    private URL parseURL( File file )
+    {
+        List<String>    lines   = null;
+        URL url         = null;
         try ( 
             FileReader  fileReader  = new FileReader( file );
             BufferedReader bufReader = new BufferedReader( fileReader );
         )
         {
-            bufReader.lines().forEach( System.out::println );
+            lines = bufReader.lines().collect( Collectors.toList() );
+            int size    = lines.size();
+            for ( int inx = 0 ; url == null && inx < size ; ++inx )
+            {
+                String[]    arr = lines.get( inx ).split( "=" );
+                if ( arr.length == 2 && arr[0].equalsIgnoreCase( "url" ) )
+                    url = new URL( arr[1] );
+            }
         }
         catch ( IOException exc )
         {
             exc.printStackTrace();
             System.exit( 1 );
         }
+        
+        return url;
+    }
+    
+    private void dumpFile( File file )
+    {
+        List<String>    lines   = null;
+        try ( 
+            FileReader  fileReader  = new FileReader( file );
+            BufferedReader bufReader = new BufferedReader( fileReader );
+        )
+        {
+                lines = bufReader.lines().collect( Collectors.toList() );
+        }
+        catch ( IOException exc )
+        {
+            exc.printStackTrace();
+            System.exit( 1 );
+        }
+        
+        lines.forEach( System.out::println );
+    }
+    
+    private void dumpFileToo( File file )
+    {
+        List<String>    lines   = null;
+        URL             url     = getLocation( file );
+        if ( url == null )
+        {
+            System.err.println( "url == null" );
+            System.exit( 1 );
+        }
+        
+        try ( 
+            InputStream inStream = url.openStream();
+            InputStreamReader inReader = new InputStreamReader( inStream );
+            BufferedReader bufReader = new BufferedReader( inReader );
+        )
+        {
+                lines = bufReader.lines().collect( Collectors.toList() );
+        }
+        catch ( IOException exc )
+        {
+            exc.printStackTrace();
+            System.exit( 1 );
+        }
+        
+        lines.forEach( System.out::println );
     }
 }

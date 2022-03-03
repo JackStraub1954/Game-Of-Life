@@ -220,4 +220,8 @@ public class GOLConstants
     public static final String  CTRL_CENTER_PN           = "centerGrid";
     /** Center rectangle containing live cells default value. */
     public static final String  CTRL_CENTER_DV           = "false";
+    /** URL of file/web link to read and display */
+    public static final String  CTRL_GRID_URL_PN         = "url";
+    /** Default value of URL of file/web link to read and display */
+    public static final String  CTRL_GRID_URL_DV         = "";
 }

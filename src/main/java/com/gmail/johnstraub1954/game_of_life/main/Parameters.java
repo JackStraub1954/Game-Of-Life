@@ -6,6 +6,7 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +99,9 @@ public enum Parameters
      */
     private GridMap             gridMap;
     
+    /** The location (URL) of the date to parse and display in the grid. */
+    private URL                 gridURL;
+    
     /** 
      * Conditions under which a live cell may continue to live.
      */
@@ -138,6 +143,7 @@ public enum Parameters
         gridCellColor = props.getGridCellColor();
         gridCellOrigin = props.getGridCellOrigin();
         gridCenter = props.getCenterGrid();
+        gridURL = props.getGridURL();
         
         survivalStates = props.getSurvivalStates();
         birthStates = props.getBirthStates();
@@ -741,6 +747,36 @@ public enum Parameters
         Boolean newValue    = gridCenter;
         String  propName    = CTRL_CENTER_PN;
         this.gridCenter = gridCenter;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Returns the value of a URL for using to populate a grid.
+     * Will return null if there is no such URL.
+     * 
+     * @return  the value of a URL for using to populate a grid,
+     *          or null if none
+     */
+    public URL getGridURL()
+    {
+        return gridURL;
+    }
+    
+    /**
+     * Sets the URL of data which may be used to populate the grid.
+     * May be null.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.CTRL_GRID_URL_PN.
+     * 
+     * @param gridURL
+     */
+    public void setGridURL( URL gridURL )
+    {
+        URL     oldValue    = this.gridURL;
+        URL     newValue    = gridURL;
+        String  propName    = CTRL_GRID_URL_PN;
+        this.gridURL = gridURL;
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }

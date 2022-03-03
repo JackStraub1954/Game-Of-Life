@@ -2,6 +2,7 @@ package com.gmail.johnstraub1954.game_of_life.main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -108,9 +109,12 @@ public class GridFrame implements Runnable
     
     private class Controls extends JPanel
     {
-        private final Parameters    parms   = Parameters.INSTANCE;
-        private final JButton       next    = new JButton( "Next Generation" );
-        private final JCheckBox     center  = new JCheckBox( "Center Cells" );
+        private final Parameters    parms       = Parameters.INSTANCE;
+        private final JButton       next        = 
+            new JButton( "Next Generation" );
+        private final JCheckBox     center      = 
+            new JCheckBox( "Center Cells" );
+        private final JTextField    urlField    = new JTextField( 25 );
         public Controls()
         {
             Dimension   minFiller   = new Dimension( 1, 1 );
@@ -119,8 +123,10 @@ public class GridFrame implements Runnable
             birthStates = parms.getBirthStates();
             
             setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
+            this.setAlignmentX( Component.CENTER_ALIGNMENT );
             add( new Box.Filler( minFiller, prefFiller, prefFiller ) );
             add( next );
+//            next.setAlignmentX( Component.CENTER_ALIGNMENT );
             add( new Box.Filler( minFiller, prefFiller, prefFiller ) );
 
             next.addActionListener( e -> propagate() );
@@ -134,6 +140,22 @@ public class GridFrame implements Runnable
             add( new Box.Filler( minFiller, prefFiller, prefFiller ) );
             add( center );
             center.addChangeListener( e -> centerGrid()  );
+            
+            JPanel  dragDropPanel   = new JPanel();
+            BoxLayout   dragAndDropLayout   =
+                new BoxLayout( dragDropPanel, BoxLayout.LINE_AXIS );
+            dragDropPanel.setLayout( dragAndDropLayout );
+            JLabel  urlLabel    = new JLabel( "Enter URL or Drag/Drop" );
+            urlLabel.setMaximumSize( urlLabel.getPreferredSize() );
+            urlField.setMaximumSize( urlField.getPreferredSize() );
+            this.add( urlLabel );
+            this.add( urlField );
+            urlLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
+            urlLabel.setHorizontalAlignment( JLabel.CENTER );
+            urlField.setAlignmentX( Component.CENTER_ALIGNMENT );
+//            add( dragDropPanel );
+            
+            new URLManager( urlField );
         }
         
         private void centerGrid()
@@ -179,7 +201,10 @@ public class GridFrame implements Runnable
             feedback.setMaximumSize( feedback.getPreferredSize() );
             feedback.setEditable( false );
             feedback.setHorizontalAlignment( JTextField.RIGHT );
+            feedback.setAlignmentX( Component.CENTER_ALIGNMENT );
+            feedback.setHorizontalAlignment( JLabel.HORIZONTAL );
             slider.addChangeListener( e -> animationMgr.adjustTimer() );
+            slider.setAlignmentX( Component.CENTER_ALIGNMENT );
             
             add( feedback );
             add( slider );
@@ -188,6 +213,7 @@ public class GridFrame implements Runnable
             animateToggle.addActionListener( e -> animationMgr.adjustTimer() );
             add( new Box.Filler( minFiller, prefFiller, prefFiller ) );
             add( animateToggle );
+            animateToggle.setAlignmentX( Component.CENTER_ALIGNMENT );
             slider.setValue( iVal );
             
             // ctor( startValue, min, max, stepSize
@@ -201,11 +227,13 @@ public class GridFrame implements Runnable
             cellSizePanel.add( cellSizeSpinner );
             cellSizePanel.setMaximumSize( cellSizePanel.getPreferredSize() );
             cellSizeSpinner.addChangeListener( e -> changeCellSize( e ) );
+            cellSizeSpinner.setAlignmentX( Component.CENTER_ALIGNMENT );
             add( cellSizePanel );
             
             boolean     isGridOn    = params.isGridLineShow();
             JCheckBox   gridOn      = new JCheckBox( "Grid On", isGridOn );
             gridOn.addChangeListener( e -> changeGridOn( gridOn.isSelected() ) );
+            gridOn.setAlignmentX( Component.CENTER_ALIGNMENT );
             add( gridOn );
             
             params.addPropertyChangeListener(str, null);

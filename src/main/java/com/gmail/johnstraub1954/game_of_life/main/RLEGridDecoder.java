@@ -166,7 +166,7 @@ public class RLEGridDecoder implements Iterable<Character>
         {
             matcher = pattern.matcher( toParse );
             parseNext();
-}
+        }
 
         /**
          * Returns true if the input sequence has not been exhausted.
