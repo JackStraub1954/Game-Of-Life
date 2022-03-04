@@ -154,8 +154,10 @@ public class GridFrame implements Runnable
             urlLabel.setHorizontalAlignment( JLabel.CENTER );
             urlField.setAlignmentX( Component.CENTER_ALIGNMENT );
 //            add( dragDropPanel );
-            
-            new URLManager( urlField );
+            JButton selectButton    = new JButton( "Select File" );
+            URLManager  urlMgr  = new URLManager( urlField );
+            selectButton.addActionListener( e -> urlMgr.selectFile( this ) );
+            add( selectButton );
         }
         
         private void centerGrid()

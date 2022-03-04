@@ -1,5 +1,6 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -19,13 +20,15 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JFileChooser;
 import javax.swing.text.JTextComponent;
 
 public class URLManager implements DropTargetListener
 {
-    private static final Parameters params          = Parameters.INSTANCE;
-    private final JTextComponent    textComponent;
-    private URL                     url             = null;
+    private static final JFileChooser   fileChooser = new JFileChooser();
+    private static final Parameters     params      = Parameters.INSTANCE;
+    private final JTextComponent        textComponent;
+    private URL                         url         = null;
     
     public URLManager( JTextComponent textComponent )
     {
@@ -34,9 +37,32 @@ public class URLManager implements DropTargetListener
         new DropTarget( textComponent, this );
     }
     
-    public URL getURL()
+    public URL getURL() throws GOLException
     {
         return url;
+    }
+    
+    public int selectFile( Component parent )
+    {
+        int rcode   = 
+            fileChooser.showDialog( parent, JFileChooser.APPROVE_SELECTION );
+        if ( rcode == JFileChooser.APPROVE_OPTION )
+        {
+            File    file    = fileChooser.getSelectedFile();
+            try
+            {
+                url = file.toURI().toURL();
+            }
+            catch ( MalformedURLException exc )
+            {
+                String  message = 
+                    "Failed to convert file to URL: "+ file.getName();
+                throw new GOLException( message, exc );
+            }
+            textComponent.setText( url.toString() );
+            params.setGridURL( url );
+        }
+        return rcode;
     }
     
     @Override

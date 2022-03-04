@@ -155,7 +155,13 @@ public class GOLConstants
      * and/or a comma, for example: "100 200", "100,200", "100 , 200".
      */
     public static final String  GRID_CELL_ORIGIN_DV = "0 0";
-    
+    /** 
+     * A value indicating whether the application should attempt to keep 
+     * the grid centered with each new generation.
+     */
+    public static final String  GRID_KEEP_CENTERED_PN   = "gridKeepCentered";
+    /** grid-keep-centered default value; must be boolean. */
+    public static final String  GRID_KEEP_CENTERED_DV   = "false";
     /** 
      * The GridMap used in this game. It has no default value,
      * and cannot be configured in a Properties file 
@@ -213,7 +219,7 @@ public class GOLConstants
      * Example: "1,2" a living cell with 1 or 2 neighbors will
      * will become alive.
      */
-    public static final String  CTRL_BIRTH_STATES_PN    = "survivalStates";
+    public static final String  CTRL_BIRTH_STATES_PN    = "birthStates";
     /** Survival states, default value */
     public static final String  CTRL_BIRTH_STATES_DV    = "3";
     /** Center rectangle containing live cells in the grid. */

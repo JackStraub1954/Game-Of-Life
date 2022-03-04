@@ -12,10 +12,10 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_DV;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_DV;
@@ -26,6 +26,8 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_HEIGHT_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_HEIGHT_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_KEEP_CENTERED_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_KEEP_CENTERED_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_DV;
@@ -284,6 +286,22 @@ public class GOLProperties extends Properties
     {
         boolean center  = getBoolean( CTRL_CENTER_PN, CTRL_CENTER_DV );
         return center;
+    }
+    
+    /**
+     * Gets a value that indicates whether the application should attempt
+     * to re-center the live cells in its display
+     * with each new generation.
+     * 
+     * @return  a value that indicates whether the grid should attempt
+     *          to re-center the live cells in its display
+     *          with each new generation
+     */
+    public boolean getGridKeepCentered()
+    {
+        boolean keepCentered    = 
+            getBoolean( GRID_KEEP_CENTERED_PN, GRID_KEEP_CENTERED_DV );
+        return keepCentered;
     }
     
     /**

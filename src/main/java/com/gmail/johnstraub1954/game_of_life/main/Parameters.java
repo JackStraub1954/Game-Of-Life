@@ -13,6 +13,7 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_HEIGHT_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_KEEP_CENTERED_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_WIDTH_PN;
@@ -93,6 +94,11 @@ public enum Parameters
     private Point               gridCellOrigin;
     /** Indicates whether the grid should attempt to center its live cells. */
     private boolean             gridCenter;
+    /** 
+     * Indicates whether the application should try to center the grid
+     * with each new generation.
+     */
+    private boolean             gridKeepCentered;
 
     /** 
      * Grid map
@@ -143,6 +149,7 @@ public enum Parameters
         gridCellColor = props.getGridCellColor();
         gridCellOrigin = props.getGridCellOrigin();
         gridCenter = props.getCenterGrid();
+        gridKeepCentered = props.getGridKeepCentered();
         gridURL = props.getGridURL();
         
         survivalStates = props.getSurvivalStates();
@@ -777,6 +784,39 @@ public enum Parameters
         URL     newValue    = gridURL;
         String  propName    = CTRL_GRID_URL_PN;
         this.gridURL = gridURL;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Returns a value indicating whether the application
+     * should attempt to keep the grid centered
+     * with each new generation.
+     * 
+     * @return  a value indicating whether the application
+     *          should attempt to keep the grid centered
+     *          with each new generation
+     */
+    public boolean getGridKeepCentered()
+    {
+        return gridKeepCentered;
+    }
+    
+    /**
+     * Sets a value indicating whether the application
+     * should attempt to keep the grid centered
+     * with each new generation.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.GRID_KEEP_CENTERED_PN.
+     * 
+     * @param keepCentered
+     */
+    public void setGridKeepCentered( boolean keepCentered )
+    {
+        boolean oldValue    = this.gridKeepCentered;
+        boolean newValue    = keepCentered;
+        String  propName    = GRID_KEEP_CENTERED_PN;
+        this.gridKeepCentered = keepCentered;
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }
