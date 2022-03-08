@@ -39,7 +39,22 @@ import java.util.Set;
  */
 public class GridMap implements Iterable<Cell>
 {
+    /** 
+     * The map that defines the contents of the map.
+     * Virtually speaking, the grid is infinite, and every cell in
+     * the grid exists; however, only live cells are physically
+     * stored in the map. 
+     * The user can assume that any successful <em>get</em> operation
+     * returns a live cell; an unsuccessful <em>get</em> operation
+     * represents a dead cell.
+     */
     private final Map<Point,Boolean>    grid    = new HashMap<>();
+    
+    /** 
+     * Changed to true every time the map is modified.
+     * Used to indicate when a grid needs to be saved.
+     */
+    private boolean modified        = false;
     
     /**
      * Returns the cell corresponding to a given coordinate pair.
@@ -84,13 +99,13 @@ public class GridMap implements Iterable<Cell>
      */
     public Cell put( int xco, int yco, boolean isAlive )
     {
-        Point   point   = new Point( xco, yco );
-        Cell    cell    = get( point );
-        if ( isAlive )
-            grid.put( point, true );
-        else
-            grid.remove( point );
-        
+//        Point   point   = new Point( xco, yco );
+//        Cell    cell    = get( point );
+//        if ( isAlive )
+//            grid.put( point, true );
+//        else
+//            grid.remove( point );
+        Cell    cell    = put( new Point( xco, yco ), isAlive );
         return cell;
     }
     
@@ -124,6 +139,7 @@ public class GridMap implements Iterable<Cell>
             grid.remove( point );
         else
             grid.put( point, true );
+        modified = true;
         
         return cell;
     }
@@ -194,6 +210,34 @@ public class GridMap implements Iterable<Cell>
     {
         Iterator<Cell>  iter    = new CellIterator( rect );
         return iter;
+    }
+    
+    /**
+     * Resets the state of the grid to "unmodified."
+     * Two common uses for this method are:
+     * <ul>
+     * <li>Immediately after a fresh game has been loaded</li>
+     * <li>Immediately after saving the game</li>
+     * </ul>
+     * 
+     * @see #isModified()
+     */
+    public void resetModified()
+    {
+        modified = false;
+    }
+    
+    /**
+     * Gets a value that indicates whether the grid has been modified
+     * since the last reset.
+     * 
+     * @return  true if the grid has been modified since the last reset
+     * 
+     * @see #resetModified()
+     */
+    public boolean isModified()
+    {
+        return modified;
     }
     
     /**

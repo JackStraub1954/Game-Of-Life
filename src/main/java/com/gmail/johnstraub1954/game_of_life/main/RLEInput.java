@@ -66,7 +66,7 @@ public class RLEInput
      */
     private static final int    stateBGroupPos  = 6;
     /**
-     *  If present, osition of the second game-states field in the input
+     *  If present, position of the second game-states field in the input
      *  header. For example, the '2' in "23/3/2"
      */
     private static final int    stateCGroupPos  = 7;

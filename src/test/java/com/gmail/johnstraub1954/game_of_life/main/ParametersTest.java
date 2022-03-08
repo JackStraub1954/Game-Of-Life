@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -209,13 +207,14 @@ class ParametersTest
     @Test
     void testAddRemoveActionListener()
     {
-        ActionListenerTester    listener    = new ActionListenerTester();
+        NotificationListenerTester    listener    = 
+            new NotificationListenerTester( GOLConstants.ACTION_RESET_PN );
         
-        params.addActionListener( listener );
+        params.addNotificationListener( listener );
         params.reset();
         listener.test( true, params );
         listener.reset();
-        params.removeActionListener( listener );
+        params.removeNotificationListener( listener );
         params.reset();
         listener.test( false, null );
     }
@@ -712,31 +711,31 @@ class ParametersTest
         assertEquals( newVal, params.getGridCellOrigin() );
     }
     
-    @Test
-    public void testSetGetGridCenter()
-    {
-        boolean oldVal  = params.isGridCenter();
-        boolean newVal  = !oldVal;
-        String  name    = GOLConstants.CTRL_CENTER_PN;
-        
-        params.setGridCenter( oldVal );
-        assertNull( propUnderTestName );
-        assertNull( propUnderTestOldVal );
-        assertNull( propUnderTestNewVal );
-        assertEquals( oldVal, params.isGridCenter() );
-        
-        PropChangeTester    tester  = getPropChangeTester();
-        params.addPropertyChangeListener( name, tester );
-        params.setGridCenter( newVal );
-        assertNotNull( propUnderTestOldVal );
-        assertNotNull( propUnderTestNewVal );
-        assertTrue( propUnderTestOldVal instanceof Boolean );
-        assertTrue( propUnderTestNewVal instanceof Boolean );
-        assertEquals( oldVal, propUnderTestOldVal );
-        assertEquals( newVal, propUnderTestNewVal );
-        assertEquals( name, propUnderTestName );
-        assertEquals( newVal, params.isGridCenter() );
-    }
+//    @Test
+//    public void testSetGetGridCenter()
+//    {
+//        boolean oldVal  = params.isGridCenter();
+//        boolean newVal  = !oldVal;
+//        String  name    = GOLConstants.CTRL_CENTER_PN;
+//        
+//        params.setGridCenter( oldVal );
+//        assertNull( propUnderTestName );
+//        assertNull( propUnderTestOldVal );
+//        assertNull( propUnderTestNewVal );
+//        assertEquals( oldVal, params.isGridCenter() );
+//        
+//        PropChangeTester    tester  = getPropChangeTester();
+//        params.addPropertyChangeListener( name, tester );
+//        params.setGridCenter( newVal );
+//        assertNotNull( propUnderTestOldVal );
+//        assertNotNull( propUnderTestNewVal );
+//        assertTrue( propUnderTestOldVal instanceof Boolean );
+//        assertTrue( propUnderTestNewVal instanceof Boolean );
+//        assertEquals( oldVal, propUnderTestOldVal );
+//        assertEquals( newVal, propUnderTestNewVal );
+//        assertEquals( name, propUnderTestName );
+//        assertEquals( newVal, params.isGridCenter() );
+//    }
     
     private PropChangeTester getPropChangeTester()
     {
@@ -757,22 +756,31 @@ class ParametersTest
         }
     }
     
-    private class ActionListenerTester implements ActionListener
+    private class NotificationListenerTester implements NotificationListener
     {
-        private boolean invoked = false;
-        private Object  source  = null;
+        private boolean invoked     = false;
+        private Object  source      = null;
+        private String  expProperty = null;
+        private String  actProperty = null;
+        
+        public NotificationListenerTester( String expProperty )
+        {
+            this.expProperty = expProperty;
+        }
         
         @Override
-        public void actionPerformed( ActionEvent evt )
+        public void notification( NotificationEvent evt )
         {
             invoked = true;
             source = evt.getSource();
+            actProperty = evt.getProperty();
         }
         
         public void test( boolean expInvoked, Object expSource )
         {
             assertEquals( expInvoked, invoked );
             assertEquals( expSource, source );
+            assertEquals( expProperty, actProperty );
         }
         
         public void reset()

@@ -230,4 +230,21 @@ public class GOLConstants
     public static final String  CTRL_GRID_URL_PN         = "url";
     /** Default value of URL of file/web link to read and display */
     public static final String  CTRL_GRID_URL_DV         = "";
+    
+
+    ////////////////////////////////////////
+    //
+    // ACTION PROPERTIES
+    // action properties do not have values; instead,
+    // the are associated with ActionEvents.
+    //
+    ////////////////////////////////////////
+    
+    /** Property associated with firing a reset action.*/
+    public static final String  ACTION_RESET_PN         = "reset";
+    /** 
+     * Property associated with firing an action
+     * indicating that the grid should be centered.
+     */
+    public static final String  ACTION_CENTER_GRID_PN   = "centerGrid";
 }

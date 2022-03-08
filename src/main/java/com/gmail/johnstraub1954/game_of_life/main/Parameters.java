@@ -26,13 +26,13 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides a single point of access to parameters
@@ -121,8 +121,30 @@ public enum Parameters
     private final PropertyChangeSupport propChangeSupport   = 
         new PropertyChangeSupport( this );
     
-    /** List of ActionListeners */
-    private final List<ActionListener>  actionListeners = new ArrayList<>();
+    // Implementation of per-property notification listeners:
+    // without specific property:
+    // ... add listener to notification listener list
+    // ... do not add anything to the notification/property map
+    // with specific property prop:
+    // ... add listener to notification listener list
+    // ... add prop to the notification/property map
+    //
+    // When dispatching notification notify for property prop:
+    // ... any listener that doesn't have a property map entry is invoked
+    // ... a listener with a property map entry is invoked only if
+    //     prop equals the mapped property
+    //
+    // Removing a listener from the list:
+    // ... the first listener match in the listener list is removed;
+    //     it doesn't matter whether there's an entry in the property
+    //     map or not.
+    
+    /** List of NotificationListeners */
+    private final List<NotificationListener>  notificationListeners = 
+        new ArrayList<>();
+    /** map notification listeners to a specific property */
+    private final Map<NotificationListener, String> 
+        notificationPropertyMap = new HashMap<>();
 
     /**
      * Constructor.
@@ -214,25 +236,44 @@ public enum Parameters
     }
     
     /**
-     * Add a given ActionListener to the list of ActionListeners.
+     * Add a given NotificationListener to the list of NotificationListeners.
+     * Listeners will be invoked for every notification event.
      * 
-     * @param listener  the given ActionListener
+     * @param listener  the given NotificationListener
      */
-    public void addActionListener( ActionListener listener )
+    public void addNotificationListener( NotificationListener listener )
     {
-        actionListeners.add( listener );
+        notificationListeners.add( listener );
     }
     
     /**
-     * Removes a given ActionListener from the list of ActionListener.
+     * Add a given NotificationListener/property pair to the list 
+     * of NotificationListeners.
+     * Listeners will be invoked for only for property notifications
+     * encapsulating the given property.
+     * 
+     * @param listener  the given NotificationListener
+     * @param property  the given property
+     */
+    public void 
+    addNotificationListener( NotificationListener listener, String property )
+    {
+        notificationListeners.add( listener );
+        notificationPropertyMap.put( listener, property );
+    }
+    
+    /**
+     * Remove a given NotificationListener from the 
+     * list of NotificationListeners.
      * If the ActionListener is not in the list
      * no action is taken.
      * 
-     * @param listener  the given ActionListener
+     * @param listener  the given NotificationListener
      */
-    public void removeActionListener( ActionListener listener )
+    public void removeNotificationListener( NotificationListener listener )
     {
-        actionListeners.remove( listener );
+        notificationListeners.remove( listener );
+        notificationPropertyMap.remove( listener );
     }
 
     /**
@@ -735,10 +776,10 @@ public enum Parameters
      * 
      * @return the value described above
      */
-    public boolean isGridCenter()
-    {
-        return gridCenter;
-    }
+//    public boolean isGridCenter()
+//    {
+//        return gridCenter;
+//    }
 
     /**
      * Sets a value that indicates if the the grid should attempt
@@ -797,7 +838,7 @@ public enum Parameters
      *          should attempt to keep the grid centered
      *          with each new generation
      */
-    public boolean getGridKeepCentered()
+    public boolean isGridKeepCentered()
     {
         return gridKeepCentered;
     }
@@ -822,13 +863,41 @@ public enum Parameters
     }
     
     /**
-     * Fires an ActionEvent to ActionListeners.
+     * Fires a NotificationEvent to NotificationListeners.
+     * The event's property name will
+     * be set to GOLConstants.ACTION_RESET_PN. 
+     */
+    public void centerGrid()
+    {
+        fireNotificationEvent( GOLConstants.ACTION_CENTER_GRID_PN );
+        reset();
+    }
+    
+    /**
+     * Fires a NotificationEvent to NotificationListeners.
+     * The event's property name will
+     * be set to GOLConstants.ACTION_RESET_PN. 
      */
     public void reset()
     {
-        ActionEvent event   =
-            new ActionEvent( this, ActionEvent.ACTION_PERFORMED, null );
-        for ( ActionListener listener : actionListeners )
-            listener.actionPerformed( event );
+        fireNotificationEvent( GOLConstants.ACTION_RESET_PN );
+    }
+    
+    /**
+     * Fires a NotificationEvent associated with a given property
+     * to all NotificationListeners.
+     * 
+     * @param property  the given property
+     */
+    private void fireNotificationEvent( String property )
+    {
+        NotificationEvent   event   =
+            new NotificationEvent( this, property );
+        for ( NotificationListener listener : notificationListeners )
+        {
+            String  mappedProperty  = notificationPropertyMap.get( listener );
+            if ( mappedProperty == null || mappedProperty.equals( property ) )
+                listener.notification( event );
+        }
     }
 }

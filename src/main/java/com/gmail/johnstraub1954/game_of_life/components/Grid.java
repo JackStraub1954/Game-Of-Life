@@ -1,13 +1,16 @@
-package com.gmail.johnstraub1954.game_of_life.main;
+package com.gmail.johnstraub1954.game_of_life.components;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.ACTION_CENTER_GRID_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.ACTION_RESET_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_KEEP_CENTERED_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_WIDTH_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MAP_PN;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,6 +28,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.swing.JPanel;
+
+import com.gmail.johnstraub1954.game_of_life.main.Cell;
+import com.gmail.johnstraub1954.game_of_life.main.Direction;
+import com.gmail.johnstraub1954.game_of_life.main.GridMap;
+import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 /**
  * Encapsulates the physical grid that displays the state
@@ -47,9 +55,9 @@ public class Grid extends JPanel implements PropertyChangeListener
     private int             gridCellSize        = params.getGridCellSize();
     private Color           gridCellColor       = params.getGridCellColor();
     
-    private boolean         gridCellCenter      = params.isGridCenter();
+    private boolean         gridKeepCentered    = params.isGridKeepCentered();
     private Point           gridCellTop         = params.getGridCellOrigin();
-    private Point           gridCellULC         = calculateULC();
+    private Point           gridCellULC         = gridCellTop;
 //    private int             gridCellTopX        = 10;
 //    private int             gridCellTopY        = 20;
     
@@ -66,7 +74,9 @@ public class Grid extends JPanel implements PropertyChangeListener
     public Grid()
     {
         params.addPropertyChangeListener( this );
-        params.addActionListener( e -> repaint() );
+        params.addNotificationListener( e -> repaint(), ACTION_RESET_PN );
+        params.addNotificationListener(
+            e -> centerGrid(), ACTION_CENTER_GRID_PN );
     }
 
     @Override
@@ -97,9 +107,12 @@ public class Grid extends JPanel implements PropertyChangeListener
         case GRID_CELL_ORIGIN_PN:
             gridCellULC = (Point)newValue;
             break;
-        case CTRL_CENTER_PN:
-            gridCellCenter = (boolean)newValue;
-            gridCellULC = calculateULC();
+        case GRID_KEEP_CENTERED_PN:
+            gridKeepCentered = (boolean)newValue;
+            repaint();
+            break;
+        case GRID_MAP_PN:
+            gridMap = (GridMap)newValue;
             break;
         default:
             break;
@@ -110,18 +123,21 @@ public class Grid extends JPanel implements PropertyChangeListener
     public void paintComponent( Graphics graphics )
     {
         super.paintComponent( graphics );
-        gridCellULC = calculateULC();
         gtx = (Graphics2D)graphics.create();
         gtx.setRenderingHint( 
             RenderingHints.KEY_ANTIALIASING, 
             RenderingHints.VALUE_ANTIALIAS_ON
         );
+
+        if ( gridKeepCentered )
+            centerGrid();
         
         int width   = getWidth();
         int height  = getHeight();
         gtx.setColor( gridColor );
         gtx.fillRect( 0,  0, width, height );
         
+//        System.out.println( gridLineShow );
         if ( gridLineShow )
         {
             Stroke  stroke  = new BasicStroke( gridLineWidth );
@@ -142,22 +158,24 @@ public class Grid extends JPanel implements PropertyChangeListener
         gtx = null;
     }
     
-    private Point calculateULC()
+    private void centerGrid()
     {
-        Point   topLeft = gridCellTop;
-        if ( gridCellCenter )
-        {
-            Rectangle   rect    = gridMap.getLiveRectangle();
-            int         centerX = rect.x + rect.width / 2;
-            int         centerY = rect.y + rect.height / 2;
-            int         width   = getWidth() / gridCellSize;
-            int         height  = getHeight() / gridCellSize;
-            int         xco     = centerX - width / 2;
-            int         yco     = centerY - height / 2;
-            topLeft = new Point( xco, yco );
-        }
-        
-        return topLeft;
+//        Rectangle   rect    = gridMap.getLiveRectangle();
+//        int         centerX = rect.x + rect.width / 2;
+//        int         centerY = rect.y + rect.height / 2;
+//        int         width   = getWidth() / gridCellSize;
+//        int         height  = getHeight() / gridCellSize;
+//        int         xco     = centerX - width / 2;
+//        int         yco     = centerY + height / 2;
+//        gridCellULC = new Point( xco, yco );
+        Rectangle   rect    = gridMap.getLiveRectangle();
+        int         width   = getWidth() / gridCellSize;
+        int         height  = getHeight() / gridCellSize;
+        int         physX   = width / 2 - rect.width / 2;
+        int         physY   = height / 2 - rect.height / 2;
+        int         ulcX    = rect.x - physX;
+        int         ulcY    = rect.y - physY;
+        gridCellULC = new Point( ulcX, ulcY );
     }
     
     private class GridLineIterator implements Iterator<Line2D>
