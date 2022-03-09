@@ -223,13 +223,17 @@ public class GOLConstants
     /** Survival states, default value */
     public static final String  CTRL_BIRTH_STATES_DV    = "3";
     /** Center rectangle containing live cells in the grid. */
-    public static final String  CTRL_CENTER_PN           = "centerGrid";
+    public static final String  CTRL_CENTER_PN          = "centerGrid";
     /** Center rectangle containing live cells default value. */
-    public static final String  CTRL_CENTER_DV           = "false";
+    public static final String  CTRL_CENTER_DV          = "false";
     /** URL of file/web link to read and display */
-    public static final String  CTRL_GRID_URL_PN         = "url";
+    public static final String  CTRL_GRID_URL_PN        = "url";
     /** Default value of URL of file/web link to read and display */
-    public static final String  CTRL_GRID_URL_DV         = "";
+    public static final String  CTRL_GRID_URL_DV        = "";
+    /** Most recent input used to populate grid */
+    public static final String  CTRL_GRID_LATEST_PN     = "gridLatestData";
+    /** Most recent input used to populate grid default value */
+    public static final String  CTRL_GRID_LATEST_DV     = "";
     
 
     ////////////////////////////////////////

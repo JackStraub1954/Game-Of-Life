@@ -6,6 +6,7 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
@@ -116,6 +117,8 @@ public enum Parameters
      * Conditions under which a dead cell may come to life.
      */
     private List<Integer>       birthStates;
+    /** The latest data used to populate the grid */
+    private RLEInput            gridLatestData;
     
     /** Support for PropertyChangeListeners */
     private final PropertyChangeSupport propChangeSupport   = 
@@ -176,6 +179,7 @@ public enum Parameters
         
         survivalStates = props.getSurvivalStates();
         birthStates = props.getBirthStates();
+        gridLatestData = props.getGridLatestData();
         
         gridMap = null;
     }
@@ -858,6 +862,36 @@ public enum Parameters
         boolean newValue    = keepCentered;
         String  propName    = GRID_KEEP_CENTERED_PN;
         this.gridKeepCentered = keepCentered;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Returns an object representing the latest data used to
+     * populate the grid.
+     * 
+     * @return  an object representing the latest data used to
+     *          populate the grid
+     */
+    public RLEInput getGridLatestData()
+    {
+        return gridLatestData;
+    }
+    
+    /**
+     * Sets a value indicating the latest data used
+     * to populate the grid.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.CTRL_GRID_LATEST_PN.
+     * 
+     * @param keepCentered
+     */
+    public void setGridLatestData( RLEInput input )
+    {
+        Object  oldValue    = gridLatestData;
+        Object  newValue    = gridLatestData;
+        String  propName    = CTRL_GRID_LATEST_PN;
+        gridLatestData = input;
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }

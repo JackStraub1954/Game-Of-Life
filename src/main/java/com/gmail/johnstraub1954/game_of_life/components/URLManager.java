@@ -201,7 +201,7 @@ public class URLManager extends DropTargetAdapter
      * 
      * @param input the RLE input to parse
      */
-    private static void open( RLEInput input )
+    public static void open( RLEInput input )
     {
         params.setGridCellOrigin( input.getUpperLeft() );
         params.setSurvivalStates( input.getSurvivalRules() );
@@ -210,6 +210,7 @@ public class URLManager extends DropTargetAdapter
         GridMap map = getGridMap( input );
         map.resetModified();
         params.setGridMap( map );
+        params.setGridLatestData( input );
         params.reset();
     }
     

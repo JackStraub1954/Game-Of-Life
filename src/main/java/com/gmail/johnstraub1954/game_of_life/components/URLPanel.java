@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
+import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 
 /**
  * Encapsulates control over the URL used to populate

@@ -12,6 +12,8 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_DV;
@@ -341,6 +343,20 @@ public class GOLProperties extends Properties
     {
         URL url = getURL( CTRL_GRID_URL_PN, CTRL_GRID_URL_DV );
         return url;
+    }
+    
+    /**
+     * Gets the most recent data used to populate the grid.
+     * Currently not stored as a property value; null is
+     * always returned.
+     * 
+     * @return  the most recent data used to populate the grid
+     */
+    public RLEInput getGridLatestData()
+    {
+        RLEInput    input   = 
+            (RLEInput)getObject( CTRL_GRID_LATEST_PN, CTRL_GRID_LATEST_DV );
+        return input;
     }
 
     /**
@@ -699,5 +715,55 @@ public class GOLProperties extends Properties
             }
         }
         return url;
+    }
+    
+    /**
+     * Obtains the value of a property and converts it to an object.
+     * Returns null if the property value is null or an empty string.
+     * 
+     * TODO for the moment this is just a placeholder; might need 
+     *      to delete or replace this method. See additional 
+     *      "todo" comments below.
+     * 
+     * @param name      the name of the property
+     * @param defValue  the default value of the property; may not be null
+     * 
+     * @return the converted object
+     * 
+     * @throws IllegalArgumentException if defValue is null
+     * @throws IllegalStateException    if the property value
+     *      cannot be converted to an object.
+     */
+    public Object getObject( String name, String defValue )
+        throws IllegalArgumentException, IllegalStateException
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        String      value   = getProperty( name, defValue ).trim();
+        Object      obj     = null;
+        if ( value != null && !value.isEmpty() )
+        {
+            try
+            {
+                // TODO figure this one out...
+                // so far the only Object value we have to deal with is
+                // the input data (to date, RLEInput object).
+                // What to do about this? Possible nothing; maybe a
+                // non-null value doesn't come out of the set of properties.
+                // Maybe need a method named "GetGridInputData()"?
+                // Maybe the initial value could be a URL to read
+                // and convert to input object?
+                //obj = "...";
+            }
+            catch ( Exception exc )
+            {
+                String  message = "\"" + value + "\" invalid Object";
+                throw new IllegalStateException( message, exc );
+            }
+        }
+        return obj;
     }
 }

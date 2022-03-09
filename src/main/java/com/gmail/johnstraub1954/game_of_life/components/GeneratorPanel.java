@@ -1,12 +1,12 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.TimerTask;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,11 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 
 import com.gmail.johnstraub1954.game_of_life.main.GOLTimer;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
+import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 import com.gmail.johnstraub1954.game_of_life.main.Utils;
 
 /**
@@ -50,6 +50,7 @@ public class GeneratorPanel extends JPanel
 
     private final JButton       nextGenButton   =
         new JButton( "Next Generation" );
+    private final JButton       rewindButton    = new JButton( "Rewind" );
     private final JTextField    sliderFeedback  = new JTextField( 25 );
     private final JSlider       slider          = getSlider();
     private final JToggleButton animateToggle   =
@@ -71,6 +72,14 @@ public class GeneratorPanel extends JPanel
         nextGenButton.setAlignmentX( Component.CENTER_ALIGNMENT );
         nextGenButton.addActionListener( e -> Utils.INSTANCE.propagate() );
         add( nextGenButton );
+        
+        rewindButton.setAlignmentX( Component.CENTER_ALIGNMENT );
+        rewindButton.addActionListener( e -> rewind() );
+        boolean rewindButtonStatus  = params.getGridLatestData() != null;
+        params.addPropertyChangeListener( e -> tweakRewind( e ) );
+
+        rewindButton.setEnabled( rewindButtonStatus );
+        add( rewindButton );
         
         // a bit more space between the next-gen button and the 
         // feedback box
@@ -168,5 +177,23 @@ public class GeneratorPanel extends JPanel
         params.setAutoRegenerationPace( genPerSec );
         tweakTask();
         params.reset();
+    }
+    
+    private void tweakRewind(  PropertyChangeEvent evt )
+    {
+        Object      newValue        = evt.getNewValue();
+        boolean     rewindStatus    =
+            newValue == null || !(newValue instanceof RLEInput);
+        rewindButton.setEnabled( rewindStatus );
+    }
+    
+    /**
+     * Resets the current pattern (if any) to its initial state.
+     */
+    private void rewind()
+    {
+        RLEInput    input   = params.getGridLatestData();
+        if ( input != null )
+            URLManager.open( input );
     }
 }
