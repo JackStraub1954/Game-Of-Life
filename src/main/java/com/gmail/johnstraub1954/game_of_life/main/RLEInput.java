@@ -446,6 +446,12 @@ public class RLEInput
             throw exc;
         }
         
+        if ( stateTagA == null )
+        {
+            stateTagA = "S";
+            stateTagB = "B";
+        }
+        
         // Assume stateA is survival state;
         // if wrong, swap with stateB
         if ( stateTagA.equals( "B" ) )

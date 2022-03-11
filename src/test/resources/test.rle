@@ -1,5 +1,4 @@
-#N Gosper glider gun
-#C This was the first gun discovered.
-#C As its name suggests, it was discovered by Bill Gosper.
-x = 0, y = 0, rule = s23/b3
-4o$4o!
+#C All patterns in this rule replicate.
+x = 13, y = 6, rule = B1357/S1357
+b2o3bo2bo2bo$o2bo2bobo3bo$o2bo2b2o4bo$o2bo2bobo3bo$o2bo2bo2bo$b2o3bo2b
+o2bo!

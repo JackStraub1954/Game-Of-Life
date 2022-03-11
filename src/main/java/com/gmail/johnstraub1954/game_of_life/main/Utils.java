@@ -67,7 +67,7 @@ public enum Utils implements PropertyChangeListener
             survivalStates = (List<Integer>)newValue;
             break;
         case GOLConstants.CTRL_BIRTH_STATES_PN:
-            survivalStates = (List<Integer>)newValue;
+            birthStates = (List<Integer>)newValue;
             break;
         case GOLConstants.GRID_MAP_PN:
             gridMap = (GridMap)newValue;

@@ -239,7 +239,21 @@ public class GridMap implements Iterable<Cell>
     {
         return modified;
     }
-    
+
+    /**
+     * Returns the upper-left-corner of a rectangle that encloses
+     * all live cells.
+     * 
+     * @return  the upper-left-corner of a rectangle that encloses
+     *          all live cells
+     */
+    public Point getUpperLeftCorner()
+    {
+        Rectangle   rect    = getLiveRectangle();
+        Point       ulc     = new Point( rect.x, rect.y );
+        return ulc;
+    }
+
     /**
      * This class is used to iterate over every live cell
      * in some rectangle.
