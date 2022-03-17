@@ -1,6 +1,6 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MAX_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.*;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
@@ -30,6 +30,7 @@ import java.awt.Point;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,6 +121,18 @@ public enum Parameters
     /** The latest data used to populate the grid */
     private RLEInput            gridLatestData;
     
+    /** Name of pattern being documented/displayed */
+    private String              patternName;
+    /** Name of author of pattern */
+    private String              authorName;
+    /** Email address of author */
+    private String              authorEmail;
+    /** 
+     * Date/time of pattern creation; to be displayed on the author line
+     * of the documentation header
+     */
+    private LocalDateTime       authorTime;
+    
     /** Support for PropertyChangeListeners */
     private final PropertyChangeSupport propChangeSupport   = 
         new PropertyChangeSupport( this );
@@ -176,10 +189,14 @@ public enum Parameters
         gridCenter = props.getCenterGrid();
         gridKeepCentered = props.getGridKeepCentered();
         gridURL = props.getGridURL();
+        gridLatestData = props.getGridLatestData();
         
         survivalStates = props.getSurvivalStates();
-        birthStates = props.getBirthStates();
-        gridLatestData = props.getGridLatestData();
+        birthStates = props.getBirthStates();        
+        patternName = props.getPatternName();
+        authorName = props.getAuthorName();
+        authorEmail = props.getAuthorEmail();
+        authorTime = props.getAuthorTime();
         
         gridMap = null;
     }
@@ -260,7 +277,7 @@ public enum Parameters
      * @param property  the given property
      */
     public void 
-    addNotificationListener( NotificationListener listener, String property )
+    addNotificationListener( String property, NotificationListener listener )
     {
         notificationListeners.add( listener );
         notificationPropertyMap.put( listener, property );
@@ -802,6 +819,19 @@ public enum Parameters
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }
+
+    /**
+     * Sets a value of the most recent cell on the grid
+     * to have been clicked.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.GRID_CELL_CLICKED_PN.
+     * 
+     * @param gridCenter    true to center the grid
+     */
+    public void selectGridCell( Cell cell )
+    {
+        fireNotificationEvent( GRID_CELL_CLICKED_PN, cell );
+    }
     
     /**
      * Returns the value of a URL for using to populate a grid.
@@ -897,6 +927,117 @@ public enum Parameters
     }
     
     /**
+     * Gets the name of the pattern being displayed/documented.
+     * 
+     * @return the name of the pattern being displayed/documented
+     */
+    public String getPatternName()
+    {
+        return patternName;
+    }
+
+    /**
+     * Sets the name of the pattern being displayed/documented
+     * to the given value.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.MISC_PATTERN_NAME_PN.
+     * 
+     * @param patternName the given value
+     */
+    public void setPatternName(String patternName)
+    {
+        String  oldValue    = this.patternName;
+        String  newValue    = patternName;
+        String  propName    = MISC_PATTERN_NAME_PN;
+        this.patternName = patternName;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+
+    /**
+     * Gets the name of the author of the pattern being documented/displayed.
+     * 
+     * @return the name of the author of the pattern
+     */
+    public String getAuthorName()
+    {
+        return authorName;
+    }
+
+    /**
+     * Sets the name of the author of the pattern to the given value.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.MISC_AUTHOR_NAME_PN.
+     * 
+     * @param authorName the given value.
+     */
+    public void setAuthorName(String authorName)
+    {
+        String  oldValue    = this.authorName;
+        String  newValue    = authorName;
+        String  propName    = MISC_AUTHOR_NAME_PN;
+        this.authorName = authorName;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+
+    /**
+     * Gets the email address of the author of the pattern.
+     * 
+     * @return the email address of the author of the pattern
+     */
+    public String getAuthorEmail()
+    {
+        return authorEmail;
+    }
+
+    /**
+     * Sets the email address of the author of the pattern to the given value.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.MISC_AUTHOR_EMAIL_PN.
+     * 
+     * @param authorName the given value.
+     */
+    public void setAuthorEmail(String authorEmail)
+    {
+        String  oldValue    = this.authorEmail;
+        String  newValue    = authorEmail;
+        String  propName    = MISC_AUTHOR_EMAIL_PN;
+        this.authorEmail = authorEmail;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+
+    /**
+     * Gets the creation time of the pattern being documented/displayed.
+     * To be displayed on the author line of the documentation header.
+     * 
+     * @return the creation time of the pattern being documented/displayed
+     */
+    public LocalDateTime getAuthorTime()
+    {
+        return authorTime;
+    }
+
+    /**
+     * Sets the creation time of the pattern being documented/displayed.
+     * To be displayed on the author line of the documentation header.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.MISC_AUTHOR_TIME_PN.
+     *
+     * @param authorTime the authorTime to set
+     */
+    public void setAuthorTime(LocalDateTime authorTime)
+    {
+        Object  oldValue    = this.authorTime;
+        Object  newValue    = authorTime;
+        String  propName    = MISC_AUTHOR_TIME_PN;
+        this.authorTime = authorTime;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+
+    /**
      * Fires a NotificationEvent to NotificationListeners.
      * The event's property name will
      * be set to GOLConstants.ACTION_RESET_PN. 
@@ -919,19 +1060,34 @@ public enum Parameters
     
     /**
      * Fires a NotificationEvent associated with a given property
-     * to all NotificationListeners.
+     * to all NotificationListeners, using the given object
+     * as the source of the event.
      * 
      * @param property  the given property
+     * @param source    the given object (source)
      */
-    private void fireNotificationEvent( String property )
+    private void fireNotificationEvent( String property, Object source )
     {
         NotificationEvent   event   =
-            new NotificationEvent( this, property );
+            new NotificationEvent( source, property );
         for ( NotificationListener listener : notificationListeners )
         {
             String  mappedProperty  = notificationPropertyMap.get( listener );
             if ( mappedProperty == null || mappedProperty.equals( property ) )
                 listener.notification( event );
         }
+    }
+    
+    /**
+     * Fires a NotificationEvent associated with a given property
+     * to NotificationListeners.
+     * The source of the event will be 
+     * <em>this</em> Parameters object.
+     * 
+     * @param property  the given property
+     */
+    private void fireNotificationEvent( String property )
+    {
+        fireNotificationEvent( property, this );
     }
 }

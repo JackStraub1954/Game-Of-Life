@@ -20,6 +20,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
@@ -74,9 +76,10 @@ public class Grid extends JPanel implements PropertyChangeListener
     public Grid()
     {
         params.addPropertyChangeListener( this );
-        params.addNotificationListener( e -> repaint(), ACTION_RESET_PN );
+        params.addNotificationListener( ACTION_RESET_PN, e -> repaint() );
         params.addNotificationListener(
-            e -> centerGrid(), ACTION_CENTER_GRID_PN );
+            ACTION_CENTER_GRID_PN, e -> centerGrid() );
+        this.addMouseListener( new MouseMonitor() );
     }
 
     @Override
@@ -300,5 +303,33 @@ public class Grid extends JPanel implements PropertyChangeListener
                 new Rectangle( xco, yco, gridCellSize, gridCellSize );
             return rect;
         }        
+    }
+    
+    /**
+     * Monitors mouse events.
+     * 
+     * @author Jack Straub
+     */
+    private class MouseMonitor extends MouseAdapter
+    {
+        /**
+         * Processes mouse clicks.
+         * Maps a pixel location to a cell in the grid
+         * and calls Parameters.setGridCellClicked(),
+         * which generates a property change event for 
+         * GOLConstants.GRID_CELL_CLICKED_PN.
+         * 
+         * @param   evt     event associated with a mouse click
+         */
+        @Override
+        public void mouseClicked( MouseEvent evt )
+        {
+            int     xco     = 
+                evt.getX() / gridCellSize + gridCellULC.x;
+            int     yco     = 
+                evt.getY() / gridCellSize + gridCellULC.y;
+            Cell    cell    = gridMap.get( xco, yco );
+            params.selectGridCell( cell );
+        }
     }
 }

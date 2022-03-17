@@ -156,6 +156,11 @@ public class GOLConstants
      */
     public static final String  GRID_CELL_ORIGIN_DV = "0 0";
     /** 
+     * The most recent cell that has been clicked (with the mouse)
+     * on the grid. This property does not have a default value.
+     */
+    public static final String  GRID_CELL_CLICKED_PN    = "gridCellClicked";
+    /** 
      * A value indicating whether the application should attempt to keep 
      * the grid centered with each new generation.
      */
@@ -212,7 +217,7 @@ public class GOLConstants
      */
     public static final String  CTRL_SURVIVAL_STATES_PN = "survivalStates";
     /** Survival states, default value */
-    public static final String  CTRL_SURVIVAL_STATES_DV = "250";
+    public static final String  CTRL_SURVIVAL_STATES_DV = "2,3";
     /**  
      * List of states under which a dead cell may become alive.
      * This is a sequence of integers separated by commas.
@@ -251,4 +256,32 @@ public class GOLConstants
      * indicating that the grid should be centered.
      */
     public static final String  ACTION_CENTER_GRID_PN   = "centerGrid";
+
+    ////////////////////////////////////////
+    //
+    // MISCELLANEOUS PROPERTIES
+    // Miscellaneous properties are mostly devoted to bookkeeping,
+    // such as pattern name, author name, author email address, etc.
+    //
+    ////////////////////////////////////////
+    
+    /** Name of the pattern being documented/displayed. */
+    public static final String  MISC_PATTERN_NAME_PN    = "patternName";
+    /** Pattern name default value. */
+    public static final String  MISC_PATTERN_NAME_DV    = "";
+    /** Author name of the pattern being documented/displayed. */
+    public static final String  MISC_AUTHOR_NAME_PN     = "authorName";
+    /** Author name default value. */
+    public static final String  MISC_AUTHOR_NAME_DV     = "";
+    /** Author email address. */
+    public static final String  MISC_AUTHOR_EMAIL_PN    = "authorEmail";
+    /** Author email address default value. */
+    public static final String  MISC_AUTHOR_EMAIL_DV    = "";
+    /** 
+     * Creation date/time of pattern; to be displayed on the author line 
+     * of the documentation header.
+     */
+    public static final String  MISC_AUTHOR_TIME_PN     = "authorTime";
+    /** Author creation date default value. */
+    public static final String  MISC_AUTHOR_TIME_DV     = "";
 }

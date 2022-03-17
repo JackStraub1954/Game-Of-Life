@@ -1,5 +1,7 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_CLICKED_PN;
+
 import javax.swing.SwingUtilities;
 
 import com.gmail.johnstraub1954.game_of_life.components.GridFrame;
@@ -22,5 +24,14 @@ public class Main
     {
         GridFrame   frame   = new GridFrame();
         SwingUtilities.invokeLater( () -> frame.run() );
+        Parameters.INSTANCE.addNotificationListener( 
+            GRID_CELL_CLICKED_PN, 
+            e -> {
+                Cell cell = (Cell)e.getSource();
+                cell.setAlive( !cell.isAlive() );
+                System.out.println( cell );
+                Parameters.INSTANCE.getGridMap().put( cell );
+                Parameters.INSTANCE.reset();
+            });
     }
 }

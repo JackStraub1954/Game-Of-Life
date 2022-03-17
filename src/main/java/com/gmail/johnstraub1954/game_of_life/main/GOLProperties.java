@@ -46,11 +46,20 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGI
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_TOP_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_EMAIL_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_EMAIL_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -357,6 +366,57 @@ public class GOLProperties extends Properties
         RLEInput    input   = 
             (RLEInput)getObject( CTRL_GRID_LATEST_PN, CTRL_GRID_LATEST_DV );
         return input;
+    }
+    
+    /**
+     * Gets the name of the pattern being documented/displayed.
+     * 
+     * @return the name of the pattern being documented/displayed
+     */
+    public String getPatternName()
+    {
+        String  name    =
+            getString( MISC_PATTERN_NAME_PN, MISC_PATTERN_NAME_DV );
+        return name;
+    }
+    
+    /**
+     * Gets the name of the author of the pattern being documented/displayed.
+     * 
+     * @return  the name of the author of the pattern
+     *          being documented/displayed
+     */
+    public String getAuthorName()
+    {
+        String  name    =
+            getString( MISC_AUTHOR_NAME_PN, MISC_AUTHOR_NAME_DV );
+        return name;
+    }
+    
+    /**
+     * Gets the email address of the author of the pattern.
+     * 
+     * @return  the email address of the author of the pattern
+     */
+    public String getAuthorEmail()
+    {
+        String  name    =
+            getString( MISC_AUTHOR_EMAIL_PN, MISC_AUTHOR_EMAIL_DV );
+        return name;
+    }
+    
+    /**
+     * Gets the creation date of the pattern being documented/displayed.
+     * To be displayed on the author line of the documentation header.
+     * 
+     * @return  the creation date of the pattern being documented/displayed
+     */
+    public LocalDateTime getAuthorTime()
+    {
+        // TODO figure out how to parse a string into a date/time
+        LocalDateTime   time    =
+            getTime( MISC_AUTHOR_TIME_PN, MISC_AUTHOR_TIME_DV );
+        return time;
     }
 
     /**
@@ -715,6 +775,55 @@ public class GOLProperties extends Properties
             }
         }
         return url;
+    }
+    
+    
+    /**
+     * Obtains the value of a property and "converts" it to a string.
+     * Returns null if the property value is null or an empty string.
+     * 
+     * @param name      the name of the property
+     * @param defValue  the default value of the property; may not be null
+     * 
+     * @return the converted string
+     * 
+     * @throws IllegalArgumentException if defValue is null
+     */
+    public String getString( String name, String defValue )
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        String      value   = getProperty( name, defValue ).trim();
+        return value;
+    }
+    
+    /**
+     * Obtains the value of a property and converts it to a date/time.
+     * Returns null if the property value is null or an empty string,
+     * or if the string cannot be converted to a date/time.
+     * 
+     * @param name      the name of the property
+     * @param defValue  the default value of the property; may not be null
+     * 
+     * @return the converted string
+     * 
+     * @throws IllegalArgumentException if defValue is null
+     */
+    public LocalDateTime getTime( String name, String defValue )
+    {
+        if ( defValue == null )
+        {
+            String  message = "Default value may not be null";
+            throw new IllegalArgumentException( message );
+        }
+        
+        // TODO figure out how to convert a string to a date/time
+//        String          value   = getProperty( name, defValue ).trim();
+        LocalDateTime   time    = LocalDateTime.now();
+        return time;
     }
     
     /**

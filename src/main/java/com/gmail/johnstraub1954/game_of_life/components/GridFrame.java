@@ -26,6 +26,7 @@ public class GridFrame implements Runnable
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         JPanel  contentPane = new JPanel( new BorderLayout() );
         
+        contentPane.add( new MenuBar(), BorderLayout.NORTH );
         contentPane.add( new GridOuterPanel(), BorderLayout.CENTER );
         contentPane.add( new Controls(), BorderLayout.WEST );
         frame.setContentPane( contentPane );

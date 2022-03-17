@@ -151,29 +151,36 @@ public class GridMap implements Iterable<Cell>
      */
     public Rectangle getLiveRectangle()
     {
-        int minX    = Integer.MAX_VALUE;
-        int maxX    = Integer.MIN_VALUE;
-        int minY    = Integer.MAX_VALUE;
-        int maxY    = Integer.MIN_VALUE;
+        Set<Point>  keySet  = grid.keySet();
+        Rectangle   rect    = null;
         
-        for ( Point point : grid.keySet() )
+        if ( keySet.isEmpty() )
+            rect = new Rectangle( 0, 0, 0, 0 );
+        else
         {
-            int xco = point.x;
-            if ( xco < minX )
-                minX = xco;
-            if ( xco > maxX )
-                maxX = xco;
-
-            int yco = point.y;
-            if ( yco < minY )
-                minY = yco;
-            if ( yco > maxY )
-                maxY = yco;
+            int         minX    = Integer.MAX_VALUE;
+            int         maxX    = Integer.MIN_VALUE;
+            int         minY    = Integer.MAX_VALUE;
+            int         maxY    = Integer.MIN_VALUE;
+            for ( Point point : keySet )
+            {
+                int xco = point.x;
+                if ( xco < minX )
+                    minX = xco;
+                if ( xco > maxX )
+                    maxX = xco;
+    
+                int yco = point.y;
+                if ( yco < minY )
+                    minY = yco;
+                if ( yco > maxY )
+                    maxY = yco;
+            }
+            
+            int xExtent = maxX - minX + 1;
+            int yExtent = maxY - minY + 1;
+            rect    = new Rectangle( minX, minY, xExtent, yExtent );
         }
-        
-        int xExtent = maxX - minX + 1;
-        int yExtent = maxY - minY + 1;
-        Rectangle   rect    = new Rectangle( minX, minY, xExtent, yExtent );
         return rect;
     }
     

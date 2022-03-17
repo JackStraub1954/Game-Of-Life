@@ -13,7 +13,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-public class RLEDescriptor
+/**
+ * Encapsulates all the data needed to create an RLE file.
+ * 
+ * @author Jack Straub
+ *
+ */
+public class RLEDescriptor implements Iterable<Character>
 {
     /** For formatting the date/time for use in header comment. */
     private static final DateTimeFormatter  timeFormatString    =
@@ -23,91 +29,182 @@ public class RLEDescriptor
     private static final String headerLineFormat    =
         "x = %d, y = %d, rule = %s/%s";
     
+    /** 
+     * The list of comments to be written to the beginning of the 
+     * RLE file. The comments are plain text; the user should not
+     * include the "#C" comment prefix.
+     */
     private final List<String>  comments        = new ArrayList<>();
-    private List<Integer>       birthRules      = new ArrayList<>();
-    private List<Integer>       survivalRules   = new ArrayList<>();
+    /** Birth rules to denote in the header line */
+    private final List<Integer> birthRules      = new ArrayList<>();
+    /** Survival rules to denote in the header line */
+    private final List<Integer> survivalRules   = new ArrayList<>();
+    /** Pattern name, e.g. "Gosper Glider"; ignored if null or empty */
     private String              name            = null;
+    /** Author name; ignored if null or empty */
     private String              authorName      = null;
+    /** 
+     * Email address for author line; ignored if null or empty, or
+     * author name is not present.
+     */
     private String              authorEmail     = null;
+    /** 
+     * Creation time for author line; ignored if null, or
+     * author name is not present.
+     */
     private LocalDateTime       authorTime      = null;
+    /** Upper-left corner of start of pattern to be reported on header line */
     private Point               upperLeftCorner = null;
+    /** Grid map for obtaining pattern data */
     private GridMap             gridMap         = null;
+    
     /**
-     * @return the name
+     * Default constructor.
+     */
+    public RLEDescriptor()
+    {
+    }
+    
+    /**
+     * Constructor.
+     * Initializes state (as much as possible) from a given RLEInput object.
+     * 
+     * @param rleData   the given RLEInputObject
+     */
+    public RLEDescriptor( RLEInput rleData )
+    {
+        birthRules.addAll( rleData.getBirthRules() );
+        survivalRules.addAll( rleData.getSurvivalRules() );
+        name = rleData.getName();
+        authorName = rleData.getAuthor();
+        upperLeftCorner = rleData.getUpperLeft();
+    }
+    
+    /**
+     * Constructor.
+     * Initializes state (as much as possible) from a given RLEInput object.
+     * 
+     * @param rleData   the given RLEInputObject
+     */
+    public RLEDescriptor( Parameters params )
+    {
+        birthRules.addAll( params.getBirthStates() );
+        survivalRules.addAll( params.getSurvivalStates() );
+        name = params.getPatternName();
+        authorName = params.getAuthorName();
+        authorEmail = params.getAuthorEmail();
+        authorTime = params.getAuthorTime();
+        gridMap = params.getGridMap();
+        if ( gridMap != null )
+            upperLeftCorner = gridMap.getUpperLeftCorner();
+    }
+    
+    /**
+     * Gets the name of the pattern.
+     * 
+     * @return the name of the pattern
      */
     public String getName()
     {
         return name;
     }
+    
     /**
-     * @param name the name to set
+     * Sets the pattern name.
+     * 
+     * @param name  the pattern name
      */
     public void setName(String name)
     {
         this.name = name;
     }
+    
     /**
-     * @return the author
+     * Gets the author name.
+     * 
+     * @return the author name
      */
     public String getAuthorName()
     {
         return authorName;
     }
+    
     /**
-     * @param authorName the author to set
+     * Sets the author name.
+     * 
+     * @param authorName the author name
      */
-    public void setAuthor(String authorName )
+    public void setAuthorName(String authorName )
     {
         this.authorName = authorName;
     }
+    
     /**
-     * @return the authorEmail
+     * Gets the author email address.
+     * 
+     * @return the author email address
      */
     public String getAuthorEmail()
     {
         return authorEmail;
     }
+    
     /**
-     * @param authorEmail the authorEmail to set
+     * Sets the author email address
+     * 
+     * @param authorEmail the author email address
      */
     public void setAuthorEmail(String authorEmail)
     {
         this.authorEmail = authorEmail;
     }
+    
     /**
-     * @return the authorTime
+     * Gets the file date/time.
+     * 
+     * @return the author date/time
      */
     public LocalDateTime getAuthorTime()
     {
         return authorTime;
     }
+    
     /**
-     * @param authorTime the authorTime to set
+     * Sets the author date/time.
+     * 
+     * @param authorTime the author date/time
      */
     public void setAuthorTime(LocalDateTime authorTime)
     {
         this.authorTime = authorTime;
     }
+    
     /**
-     * @return the upperLeftCorner
+     * Gets the coordinates of the upper-left corner of the
+     * encapsulated grid.
+     * 
+     * @return  the the upper-left corner of the
+     *          encapsulated grid
      */
     public Point getUpperLeftCorner()
     {
-        return upperLeftCorner;
+        if ( upperLeftCorner != null )
+            return upperLeftCorner;
+        
+        if ( gridMap != null )
+            return gridMap.getUpperLeftCorner();
+        
+        return new Point( 0, 0 );
     }
+    
     /**
-     * @param upperLeftCorner the upperLeftCorner to set
+     * Sets the upper-left corner of the encapsulated grid.
+     * 
+     * @param upperLeftCorner the upper-left corner of the encapsulated grid
      */
-    public void setUpperLeftCorner(Point upperLeftCorner)
+    public void setUpperLeftCorner( Point upperLeftCorner )
     {
         this.upperLeftCorner = upperLeftCorner;
-    }
-    /**
-     * @return the comments
-     */
-    public List<String> getComments()
-    {
-        return comments;
     }
     
     /**
@@ -118,10 +215,8 @@ public class RLEDescriptor
      */
     public void setBirthRules( List<Integer> birthRules )
     {
-        if ( birthRules == null )
-            this.birthRules = new ArrayList<>();
-        else
-            this.birthRules = birthRules;
+        this.birthRules.clear();
+        this.birthRules.addAll( birthRules );
     }
     
     /**
@@ -152,10 +247,8 @@ public class RLEDescriptor
      */
     public void setSurvivalRules( List<Integer> survivalRules )
     {
-        if ( survivalRules == null )
-            this.survivalRules = new ArrayList<>();
-        else
-            this.survivalRules = survivalRules;
+        this.survivalRules.clear();
+        this.survivalRules.addAll( survivalRules );
     }
     
     /**
@@ -176,6 +269,27 @@ public class RLEDescriptor
     public List<Integer> getSurvivalRules()
     {
         return survivalRules;
+    }
+    
+    /**
+     * Gets the list of comments.
+     * 
+     * @return the list of comments
+     */
+    public List<String> getComments()
+    {
+        return comments;
+    }
+    
+    /**
+     * Sets the entire list of comments.
+     * 
+     * @param comments  the list of comments
+     */
+    public void setComments( List<String> comments )
+    {
+        this.comments.clear();
+        this.comments.addAll( comments );
     }
     
     /**
@@ -223,7 +337,28 @@ public class RLEDescriptor
     }
     
     /**
-     * @return
+     * Gets the encapsulated grid map.
+     */
+    public GridMap getGridMap()
+    {
+        return gridMap;
+    }
+    
+    /**
+     * Sets the encapsulated grid map to a given value.
+     * 
+     * @param   the given value
+     */
+    public void setGridMap( GridMap gridMap )
+    {
+        this.gridMap = gridMap;
+    }
+    
+    /**
+     * Returns a list of comments to add to the RLE file header.
+     * Each comment is formatted with the "#C" prefix.
+     * 
+     * @return  a list of comments to add to the RLE file header
      */
     public List<String> getHeaderComments()
     {
@@ -233,7 +368,7 @@ public class RLEDescriptor
             .map( s -> "#C " + s )
             .collect( Collectors.toCollection( ArrayList::new ) );
         if ( name != null && !name.isEmpty() )
-            headerComments.add( "N " + name );
+            headerComments.add( "#N " + name );
         
         // Only add author data if author name is present.
         // If author name is not present, author email and date
@@ -288,7 +423,7 @@ public class RLEDescriptor
         StringBuilder   bBldr   = new StringBuilder( "B" );
         birthRules.forEach( i -> bBldr.append( i ) );
         StringBuilder   sBldr   = new StringBuilder( "S" );
-        birthRules.forEach( i -> sBldr.append( i ) );
+        survivalRules.forEach( i -> sBldr.append( i ) );
         String  line    = String.format(
             headerLineFormat,
             upperLeftCorner.x, 
@@ -300,23 +435,98 @@ public class RLEDescriptor
         return line;
     }
     
+    /**
+     * Returns an iterator to traverse all the cells in the live rectangle
+     * of the encapsulated grid map. The encapsulated grid map
+     * may not be null.
+     * 
+     * @return  an iterator to traverse all the cells in the live rectangle
+     *          of a grid map
+     *          
+     * @throws  NullPointerException if the encapsulated grid map is null
+     */
+    public Iterator<Character> iterator() throws NullPointerException
+    {
+        Iterator<Character> iterator    = new CellIterator( gridMap );
+        return iterator;
+    }
+    
+    /**
+     * Encodes the encapsulated grid in RLE format.
+     * Returns the encoding as a list of strings suitable for
+     * writing to an output sink as individual lines of text.
+     * 
+     * @return  the encoding of the encapsulated grid map in RLE format
+     */
+    public List<String> getEncodedGrid()
+    {
+        RLEGridEncoder  encoder = new RLEGridEncoder( this );
+        encoder.encode();
+        List<String>    lines   = encoder.getLines();
+        return lines;
+    }
+    
+    /**
+     * Sequentially iterates over every "significant" cell 
+     * in the encapsulated gridMap.
+     * A "significant cell" is every cell in the gridmap's
+     * live rectangle, up to and including the last live cell
+     * in each row.
+     * Dead cells at the end of a row are ignored.
+     * 
+     * For each cell, 'o' is returned if the cell is live, 
+     * 'b' is returned if the cell is dead. The next character
+     * returned after a row of the rectangle is exhausted is '$'.
+     * The next character returned after processing the
+     * last live cell in the last row is '!'.
+     * 
+     * @author Jack Straub
+     */
     private static class CellIterator implements Iterator<Character>
     {
+        /** The grid map to traverse */
         private final GridMap   gridMap;
+        /** The live rectangle within the grid map to traverse */
         private final Rectangle liveRect;
+        /** 
+         * The x-coordinate of the first cell in every row
+         * of the live rectangle.
+         */
         private final int       firstX;
+        /**
+         * The x-coordinate of the end of each row in the live rectangle.
+         * This value is non-inclusive; if the value of the variable
+         * is N, the x-coordinate of the last cell in a row is N - 1. 
+         */
         private final int       lastX;
+        /** The y-coordinate of the first row in the live rectangle */
         private final int       firstY;
+        /**
+         * The y-coordinate of the end row at the end of the live rectangle.
+         * This value is non-inclusive; if the value of the variable
+         * is M, the y-coordinate of the last row is M - 1. 
+         */
         private final int       lastY;
-        private final int       lastRow;
-        private final int       lastRowX;
         
+        /** The x-coordinate of the next cell to traverse */
         private int             nextX;
-        private int             nextY;
-        // initial value of lastChar should be anything OTHER than:
-        // 'o', 'b', '$', '!'
+        /** The y-coordinate of the next cell to traverse */
+        private int             currY;
+        /** X coordinate of last live cell in current row; -1 if none */
+        private int             lastLiveX;
+        /**
+         * The last character returned by the next() method.
+         * Its initial value of lastChar should be anything OTHER than:
+         * 'o', 'b', '$', '!'
+         */
         private char            lastChar    = ' ';
         
+        /**
+         * Constructor.
+         * 
+         * @param map   the grid map to traverse;
+         *              may not be null
+         */
         public CellIterator( GridMap map )
         {
             gridMap = map;
@@ -326,47 +536,83 @@ public class RLEDescriptor
             firstY = liveRect.y;
             lastY = firstY + liveRect.height;
             nextX = firstX;
-            nextY = firstY;
             
-            // find the last live cell in the last row
-            lastRow = lastY - 1;
-            int lastCol = 0;
-            for ( int inx = firstX ; inx < lastX ; ++inx )
-            {
-                Cell    cell    = gridMap.get( inx, lastRow );
-                if ( cell.isAlive() )
-                    lastCol = cell.getXco();
-            }
-            lastRowX = lastCol;
+            // Call to new row will immediately increment this 
+            currY = firstY - 1;
+            newRow();
         }
         
+        /**
+         * Returns true if there is at least one cell
+         * in the live rectangle of the grid map
+         * that has no yet been traversed.
+         * 
+         * @return  true if there are more cells to traverse
+         */
         @Override
         public boolean hasNext()
         {
-            boolean result  = lastChar == '!';
+            boolean result  = lastChar != '!';
             return result;
         }
+        
+        /**
+         * Returns the next character in the iteration.
+         * 
+         * @return  the next character in the iteration
+         * 
+         * @throws  NoSuchElementException if the iteration is complete
+         */
         @Override
-        public Character next()
+        public Character next() throws NoSuchElementException
         {
             if ( lastChar == '!' )
                 throw new NoSuchElementException( "iterator overflow" );
-
-            if ( nextY == lastRow && nextX > lastRowX )
-                lastChar = '!';
-            else if ( nextX >= lastX )
+            if ( nextX <= lastLiveX )
             {
-                nextX = firstX;
-                ++nextY;
-                lastChar = '$';
+                Cell    nextCell    = gridMap.get( nextX++, currY );
+                lastChar = nextCell.isAlive() ? 'o' : 'b';
             }
             else
             {
-                Cell    cell    = gridMap.get( nextX++, nextY );
-                lastChar = cell.isAlive() ? 'o' : 'b';
+                newRow();
+                lastChar = currY < lastY ? '$' : '!';
             }
             
             return lastChar;
+        }
+        
+        /**
+         * Prepare state for processing next row in grid.
+         * 
+         * Precondition:<br>
+         * currY is one less than the next row to process.
+         * The last time this method is invoked, currY should be equal to
+         * lastY - 1 (firstY + rect.height - 1).
+         * 
+         * Postcondition:<br>
+         * currY incremented by 1.
+         * 
+         * Postcondition:<br>
+         * nextX set equal to the first column in the row.
+         * 
+         * Postcondition:<br>
+         * lastLiveX set equal to the column of the last live cell
+         * in the new row.
+         * If every cell in the new row is dead, lastLiveX == -1.
+         */
+        private void newRow()
+        {
+            lastLiveX = -1;
+            if ( ++currY < lastY )
+            {
+                int col = lastX - 1;
+                Cell    cell    = gridMap.get( col, currY );
+                while ( !cell.isAlive() && col >= 0 )
+                    cell = gridMap.get( --col, currY );
+                lastLiveX = col;
+            }
+            nextX = firstX;
         }
     }
 }

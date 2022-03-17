@@ -1,0 +1,177 @@
+package com.gmail.johnstraub1954.game_of_life.main;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * JUnit test for testing the RLEGridEncoder.
+ * 
+ * @author Jack Straub
+ */
+class RLEGridEncoderTest
+{
+    /**
+     * Can't test much besides a) constructor doesn't throw exception, and
+     * b) the new object contains an empty list of lines.
+     */
+    @Test
+    void testRLEGridEncoder()
+    {
+        RLEDescriptor   descrip = new RLEDescriptor();
+        descrip.setGridMap( new GridMap() );
+        RLEGridEncoder  encoder = new RLEGridEncoder( descrip );
+        List<String>    lines   = encoder.getLines();
+        assertNotNull( lines );
+        assertEquals( 0, lines.size() );
+    }
+
+    /**
+     * Test RLE encoding.
+     * Things to watch out for:
+     * <ul>
+     * <li>No line should be longer than 70 characters.</li>
+     * <li>No line should end with a number</li>
+     * <li>No line should end with a dead cell</li>
+     * <li>Sequence of characters ends with !
+     * </ul>
+     */
+    @Test
+    void testEncode()
+    {
+        GridMap         map     = new GridMap();
+        List<String>    lines   = null;
+        String          line    = null;
+        
+        // empty map; output should be one line 
+        // consisting solely of the character '!'
+        lines = testEncodeHelper( map );
+        assertEquals( 1, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 1, line.length() );
+        assertEquals( '!', line.charAt( 0 ) );
+        
+        int xco     = 0;
+        int yco     = 0;
+        
+        // 1 live cell; output should be o!
+        map.put( xco++, yco, true );
+        lines = testEncodeHelper( map );
+        assertEquals( 1, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 2, line.length() );
+        assertEquals( 'o', line.charAt( 0 ) );
+        assertEquals( '!', line.charAt( 1 ) );
+        
+        // force encoding to be exactly 70 chars.
+        // output should be a single line ending with !
+        xco = 0;
+        yco = 0;
+        map.put( xco++, yco, true );
+        while ( xco < 69 )
+        {
+            map.put( xco++, yco, false );
+            map.put( xco++, yco, true );
+        }
+        lines = testEncodeHelper( map );
+        assertEquals( 1, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 70, line.length() );
+        assertEquals( 'o', line.charAt( 68 ) );
+        assertEquals( '!', line.charAt( 69 ) );
+        
+        // previous map ended at character 68 with 'o';
+        // new map should end at character 68-69 with "2o",
+        // yielding two lines with the second consisting solely of '!'
+        map.put( xco++, yco, true );
+        lines = testEncodeHelper( map );
+        assertEquals( 2, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 70, line.length() );
+        assertTrue( line.endsWith( "2o" ) );
+        line = lines.get( 1 );
+        assertEquals( 1, line.length() );
+        assertEquals( '!', line.charAt( 0 ) );
+        
+        // this time end line, at character 67, with 2b2o
+        // this will potentially terminate the first line with '2'
+        // and begin the second line with 'o'.
+        // If working properly, the algorithm will terminate the first line,
+        // at characters 67-68, with 2b, and format the second line as
+        // 2o!
+        xco = 67;
+        map.put( xco++, yco, false );
+        map.put( xco++, yco, false );
+        map.put( xco++, yco, true );
+        map.put( xco++, yco, true );
+        lines = testEncodeHelper( map );
+        assertEquals( 2, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 69, line.length() );
+        assertTrue( line.endsWith( "2b" ) );
+        line = lines.get( 1 );
+        assertEquals("2o!", line );
+        
+        // end line, at character 67, with b20o
+        // this will potentially terminate the first line with '20'
+        // and begin the second line with 'o'.
+        // If working properly, the algorithm will terminate the first line,
+        // at characters 67, with b, and format the second line as
+        // 20o!
+        xco = 67;
+        map.put( xco++, yco, false );
+        for ( int inx = 0 ; inx < 20 ; ++inx )
+            map.put( xco++, yco, true );
+        lines = testEncodeHelper( map );
+        assertEquals( 2, lines.size() );
+        line = lines.get( 0 );
+        assertEquals( 68, line.length() );
+        assertTrue( line.endsWith( "b" ) );
+        line = lines.get( 1 );
+        assertEquals("20o!", line );
+    }
+    
+    /**
+     * Create a descriptor with a given grid map.
+     * Encode the grid map.
+     * Return the list of lines generated by the encoding.
+     * 
+     * @param map   the given grid map
+     * 
+     * @return  the list of lines generated by encoding the grid map
+     */
+    private List<String> testEncodeHelper( GridMap map )
+    {
+        List<String>    lines   = null;
+        RLEDescriptor   descrip = new RLEDescriptor();
+        descrip.setGridMap( map );
+        RLEGridEncoder  encoder = new RLEGridEncoder( descrip );
+        encoder.encode();
+        lines = encoder.getLines();
+        print( lines );
+        return lines;
+    }
+
+    /**
+     * Print out every line of a given list.
+     * Initiate the output with a guide making it easy to identify
+     * the index of a character in a line.
+     * 
+     * @param lines the given list
+     */
+    private void print( List<String> lines )
+    {
+        String  guide   =
+            "0.........1.........2.........3.........4"
+            + ".........5.........6........9";
+        System.out.println( "start" );
+        System.out.println( guide );
+        lines.forEach( System.out:: println );
+        System.out.println( "end" );
+        System.out.println();
+    }
+}

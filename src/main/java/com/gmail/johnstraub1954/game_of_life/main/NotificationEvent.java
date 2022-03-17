@@ -36,7 +36,7 @@ public class NotificationEvent extends ActionEvent
      */
     public NotificationEvent( Object source, String property )
     {
-        this( source, ActionEvent.ACTION_PERFORMED, null, 0, 0, property );
+        this( source, ACTION_PERFORMED, null, 0, 0, property );
     }
     
     /**
