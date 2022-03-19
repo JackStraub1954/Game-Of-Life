@@ -1,13 +1,23 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_COLOR_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_SHOW_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_LINE_WIDTH_PN;
+
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -38,8 +48,6 @@ public class GridPropertiesPanel extends JPanel
     private static final int        gridLineWidthMax     = 128;
     /** size of a step when manipulating cell-size spinner */
     private static final int        gridLineWidthStep    = 1;
-    /** initial value for grid line width */
-    private final int   gridLineWidth   = params.getGridLineWidth();
     
     /** minimum cell size */
     private static final int        cellSizeMin     = 0;
@@ -47,48 +55,34 @@ public class GridPropertiesPanel extends JPanel
     private static final int        cellSizeMax     = 128;
     /** size of a step when manipulating cell-size spinner */
     private static final int        cellSizeStep    = 1;
-    /** initial value for cell size */
-    private final int cellSize  = params.getGridCellSize();
-    
-    /** spinner model for setting cell size */
-    private final SpinnerNumberModel    cellSizeModel   =
-        new SpinnerNumberModel( 
-            cellSize, cellSizeMin, cellSizeMax, cellSizeStep
-        );
-    /** spinner for setting cell size */
-    private final JSpinner              cellSizeSpinner =
-        new JSpinner( cellSizeModel );
-    
-    /** spinner model for setting cell size */
-    private final SpinnerNumberModel    gridLineWidthModel   =
-        new SpinnerNumberModel( 
-            gridLineWidth, 
-            gridLineWidthMin,
-            gridLineWidthMax,
-            gridLineWidthStep
-        );
-    /** spinner for setting cell size */
-    private final JSpinner              gridLineWidthSpinner =
-        new JSpinner( gridLineWidthModel );
 
     public GridPropertiesPanel()
     {
         super( new GridBagLayout() );
-        Border  border  = BorderFactory
-            .createEmptyBorder( margin, margin, margin, margin );
-        setBorder( border );
+//        Border  border  = BorderFactory
+//            .createEmptyBorder( margin, margin, margin, margin );
+//        setBorder( border );
         
+        Border  emptyBorder = BorderFactory
+            .createEmptyBorder( margin, margin, margin, margin );
+        Border  lineBorder  = BorderFactory
+            .createLineBorder( Color.BLACK, 2 );
+        Border  border      = BorderFactory
+            .createCompoundBorder( lineBorder, emptyBorder );
+        setBorder( border );
+
         GridBagConstraints  gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        SpinnerPanel    spinnerPanel    = null;
+        SpinnerNumberPanel    spinnerPanel    = null;
         ColorPanel      colorPanel      = null;
         add( new ColorPanel( 
             "Grid Color",
-            params.getGridColor(),
-            c -> params.setGridColor( c )
+            "GRID_COLOR_PN",
+            c -> params.setGridColor( c ),
+            () -> params.getGridColor()
             ),
             gbc
         );
@@ -99,8 +93,9 @@ public class GridPropertiesPanel extends JPanel
         
         colorPanel = new ColorPanel( 
             "Cell Color", 
-            params.getGridColor(),
-            c -> params.setGridCellColor( c ) 
+            GRID_CELL_COLOR_PN,
+            c -> params.setGridCellColor( c ),
+            () -> params.getGridCellColor() 
         );
         add( colorPanel, gbc );
         gbc.gridy++;
@@ -110,8 +105,9 @@ public class GridPropertiesPanel extends JPanel
         
         colorPanel = new ColorPanel( 
             "Grid Line Color", 
-            params.getGridLineColor(),
-            c -> params.setGridLineColor( c ) 
+            GRID_LINE_COLOR_PN,
+            c -> params.setGridLineColor( c ),
+            () -> params.getGridLineColor() 
         );
         add( colorPanel, gbc );
         gbc.gridy++;
@@ -119,10 +115,14 @@ public class GridPropertiesPanel extends JPanel
         add( new HSeparator( 3, true ), gbc );
         gbc.gridy++;
         
-        spinnerPanel = new SpinnerPanel(
-            gridLineWidthSpinner,
+        spinnerPanel = new SpinnerNumberPanel(
+            gridLineWidthMin,
+            gridLineWidthMax,
+            gridLineWidthStep,
             "Grid Line Width",
-            i -> params.setGridLineWidth( i )
+            GRID_LINE_WIDTH_PN,
+            i -> params.setGridLineWidth( i ),
+            () -> params.getGridLineWidth()
         );
         add( spinnerPanel, gbc );
         gbc.gridy++;
@@ -130,10 +130,14 @@ public class GridPropertiesPanel extends JPanel
         add( new HSeparator( 3, true ), gbc );
         gbc.gridy++;
         
-        spinnerPanel = new SpinnerPanel( 
-            cellSizeSpinner, 
+        spinnerPanel = new SpinnerNumberPanel( 
+            cellSizeMin,
+            cellSizeMax,
+            cellSizeStep,
             "Cell Size",
-            i -> params.setGridCellSize( i )
+            GRID_CELL_SIZE_PN,
+            i -> params.setGridCellSize( i ),
+            () -> params.getGridCellSize()
         );
         add( spinnerPanel, gbc );
         gbc.gridy++;
@@ -141,11 +145,15 @@ public class GridPropertiesPanel extends JPanel
         add( new HSeparator( 3, true ), gbc );
         gbc.gridy++;
         
-        CheckBox    checkBox    = 
-            new CheckBox( "Show Grid", b -> params.setGridLineShow( b ) );
+        CheckBox    checkBox    = new CheckBox(
+            "Show Grid",
+            GRID_LINE_SHOW_PN,
+            b -> params.setGridLineShow( b ),
+            () -> params.isGridLineShow()
+        );
         checkBox.setSelected( params.isGridLineShow() );
         add( checkBox, gbc );
-    }
+}
 
     private static class ColorPanel 
         extends JPanel 
@@ -155,9 +163,10 @@ public class GridPropertiesPanel extends JPanel
         private final Consumer<Color>   consumer;
         
         public ColorPanel( 
-            String  text, 
-            Color   color,
-            Consumer<Color> consumer
+            String          text, 
+            String          propertyName,
+            Consumer<Color> consumer,
+            Supplier<Color> supplier
         )
         {
             super( new GridLayout( 1, 2, 2, 2 ) );
@@ -166,7 +175,7 @@ public class GridPropertiesPanel extends JPanel
             JButton button  = new JButton( text );
             Border  border  = 
                 BorderFactory.createLineBorder( Color.BLACK, 1 );
-            label.setBackground( color );
+            label.setBackground( supplier.get() );
             label.setBorder( border );
             label.setOpaque( true );
 
@@ -174,6 +183,10 @@ public class GridPropertiesPanel extends JPanel
             
             add( button );
             add( label );
+            params.addPropertyChangeListener(
+                propertyName, e -> label.setBackground( supplier.get() ) 
+            );
+            
         }
         
         /**
@@ -201,25 +214,37 @@ public class GridPropertiesPanel extends JPanel
         }
     }
     
-    private static class SpinnerPanel 
+    private static class SpinnerNumberPanel 
         extends JPanel
         implements ChangeListener
     {
         private final IntConsumer   consumer;
         
-        public SpinnerPanel(
-            JSpinner    spinner, 
+        public SpinnerNumberPanel(
+            int         min,
+            int         max,
+            int         step,
             String      text, 
-            IntConsumer consumer
+            String      propertyName,
+            IntConsumer consumer,
+            IntSupplier supplier
         )
         {
             super( new GridLayout( 1, 2, 2, 2 ) );
             this.consumer = consumer;
             JLabel  label   = new JLabel( text );
             label.setHorizontalAlignment( JLabel.RIGHT );
+            
+            int val = supplier.getAsInt();
+            SpinnerNumberModel  model   = 
+                new SpinnerNumberModel( val, min, max, step );
+            JSpinner    spinner = new JSpinner( model );
             spinner.addChangeListener( this );
             add( label );
             add( spinner );
+            params.addPropertyChangeListener( 
+                propertyName, e -> model.setValue( supplier.getAsInt() )
+            );
         }
         
         @Override
@@ -247,11 +272,32 @@ public class GridPropertiesPanel extends JPanel
     {
         private final Consumer<Boolean> consumer;
         
-        public CheckBox( String text, Consumer<Boolean> consumer )
+        public CheckBox( 
+            String              text, 
+            String              propertyName,
+            Consumer<Boolean>   consumer,
+            Supplier<Boolean>   supplier
+        )
         {
             super( text );
             this.consumer = consumer;
+            setSelected( supplier.get() );
             addChangeListener( this );
+            addComponentListener( 
+                new ComponentAdapter()
+                {
+                    @Override
+                    public void componentShown( ComponentEvent evt )
+                    {
+                        System.out.println( "check box" );
+                        JCheckBox   checkBox    = (JCheckBox)evt.getSource();
+                        checkBox.setSelected( supplier.get() );
+                    }
+                }
+            );
+            params.addPropertyChangeListener(
+                propertyName, e -> setSelected( supplier.get() ) 
+            );
         }
 
         @Override

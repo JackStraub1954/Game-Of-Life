@@ -256,6 +256,13 @@ public class GOLConstants
      * indicating that the grid should be centered.
      */
     public static final String  ACTION_CENTER_GRID_PN   = "centerGrid";
+    /** Property associated with firing an "apply" action.*/
+    public static final String  ACTION_APPLY_PN         = "apply";
+    /** Property associated with firing a "cancel" action.*/
+    public static final String  ACTION_CANCEL_PN        = "cancel";
+    /** Property associated with firing an "OK" action.*/
+    public static final String  ACTION_OKAY_PN          = "okay";
+
 
     ////////////////////////////////////////
     //

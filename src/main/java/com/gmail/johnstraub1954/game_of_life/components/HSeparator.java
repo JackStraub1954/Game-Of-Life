@@ -76,12 +76,12 @@ public class HSeparator extends JComponent
         
         Graphics2D  gtx     = (Graphics2D)graphics.create();
         Container   parent  = getParent();
-        int         width   = parent.getWidth();
+        int         width   = getWidth();
         Dimension   size    = new Dimension( width, height );
         this.setSize( size );
         
         gtx.setColor( parent.getBackground() );
-        gtx.fillRect( 0,  0,  width,  height );
+        gtx.fillRect( 0,  0,  (int)(width * percentWidth),  height );
         
         if ( !invisible )
         {
