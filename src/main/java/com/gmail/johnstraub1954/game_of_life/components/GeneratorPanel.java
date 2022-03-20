@@ -2,7 +2,6 @@ package com.gmail.johnstraub1954.game_of_life.components;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.TimerTask;

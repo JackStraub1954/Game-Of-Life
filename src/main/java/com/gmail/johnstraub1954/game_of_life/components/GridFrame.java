@@ -1,7 +1,6 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

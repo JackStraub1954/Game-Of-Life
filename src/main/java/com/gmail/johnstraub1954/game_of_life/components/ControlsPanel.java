@@ -1,12 +1,7 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
-
-import java.awt.Color;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,15 +10,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 public class ControlsPanel extends JPanel
 {
-    /**  Generated serial version UID */
-    private static final long serialVersionUID = 4696307862593824588L;
     /** Parameters singleton */
     private static final Parameters params          = Parameters.INSTANCE;
     /** minimum cell size */
@@ -69,14 +61,6 @@ public class ControlsPanel extends JPanel
     {
         setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
         this.setAlignmentX( Component.CENTER_ALIGNMENT );
-        
-        Border  innerBorder     =
-            BorderFactory.createLineBorder( Color.BLACK );
-        Border  outerBorder     =
-            BorderFactory.createEmptyBorder( 8, 4, 8, 4 );
-        Border  border          =
-            BorderFactory.createCompoundBorder( innerBorder, outerBorder );
-//        this.setBorder( border );
         
         cellSizeLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
         cellSizeLabel.setHorizontalAlignment( JLabel.CENTER );

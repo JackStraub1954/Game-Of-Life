@@ -10,8 +10,6 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_DV;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_DV;
@@ -52,6 +50,8 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHO
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_FILE_NAME_DV;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_FILE_NAME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_DV;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
 
@@ -287,19 +287,6 @@ public class GOLProperties extends Properties
     }
     
     /**
-     * Gets a value that indicates whether the grid should attempt
-     * to center the live cells in its display.
-     * 
-     * @return  a value that indicates whether the grid should attempt
-     *          to center the live cells in its display
-     */
-    public boolean getCenterGrid()
-    {
-        boolean center  = getBoolean( CTRL_CENTER_PN, CTRL_CENTER_DV );
-        return center;
-    }
-    
-    /**
      * Gets a value that indicates whether the application should attempt
      * to re-center the live cells in its display
      * with each new generation.
@@ -377,6 +364,20 @@ public class GOLProperties extends Properties
     {
         String  name    =
             getString( MISC_PATTERN_NAME_PN, MISC_PATTERN_NAME_DV );
+        return name;
+    }
+    
+    /**
+     * Gets the name of the file
+     * containing the pattern being documented/displayed.
+     * 
+     * @return  the name of the file containing
+     *          the pattern being documented/displayed
+     */
+    public String getPatternFileName()
+    {
+        String  name    =
+            getString( MISC_PATTERN_FILE_NAME_PN, MISC_PATTERN_FILE_NAME_DV );
         return name;
     }
     

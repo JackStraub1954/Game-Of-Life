@@ -1,14 +1,14 @@
 package com.gmail.johnstraub1954.game_of_life.main;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.*;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MAX_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_MIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_ON_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.AUTO_REGEN_PACE_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_BIRTH_STATES_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_CENTER_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_LATEST_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_GRID_URL_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.CTRL_SURVIVAL_STATES_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_CLICKED_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_COLOR_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_ORIGIN_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_CELL_SIZE_PN;
@@ -24,6 +24,10 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGI
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_RIGHT_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_MARGIN_TOP_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.GRID_WIDTH_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_EMAIL_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -31,10 +35,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class provides a single point of access to parameters
@@ -123,6 +124,8 @@ public enum Parameters
     
     /** Name of pattern being documented/displayed */
     private String              patternName;
+    /** Name of file containing the pattern being documented/displayed */
+    private String              patternFileName;
     /** Name of author of pattern */
     private String              authorName;
     /** Email address of author */
@@ -137,31 +140,17 @@ public enum Parameters
     private final PropertyChangeSupport propChangeSupport   = 
         new PropertyChangeSupport( this );
     
-    // Implementation of per-property notification listeners:
-    // without specific property:
-    // ... add listener to notification listener list
-    // ... do not add anything to the notification/property map
-    // with specific property prop:
-    // ... add listener to notification listener list
-    // ... add prop to the notification/property map
-    //
-    // When dispatching notification notify for property prop:
-    // ... any listener that doesn't have a property map entry is invoked
-    // ... a listener with a property map entry is invoked only if
-    //     prop equals the mapped property
-    //
-    // Removing a listener from the list:
-    // ... the first listener match in the listener list is removed;
-    //     it doesn't matter whether there's an entry in the property
-    //     map or not.
+    /** 
+     * Used to maintain a list of notification listeners.
+     * 
+     * @see ActionRegistrar
+     * @see #addNotificationListener(NotificationListener)
+     * @see #addNotificationListener(String, NotificationListener)
+     * @see #fireNotificationEvent(String)
+     * @see #fireNotificationEvent(String, Object)
+     */
+    private final ActionRegistrar   actionRegistrar = new ActionRegistrar();
     
-    /** List of NotificationListeners */
-    private final List<NotificationListener>  notificationListeners = 
-        new ArrayList<>();
-    /** map notification listeners to a specific property */
-    private final Map<NotificationListener, String> 
-        notificationPropertyMap = new HashMap<>();
-
     /**
      * Constructor.
      */
@@ -186,7 +175,6 @@ public enum Parameters
         gridCellSize = props.getGridCellSize();
         gridCellColor = props.getGridCellColor();
         gridCellOrigin = props.getGridCellOrigin();
-        gridCenter = props.getCenterGrid();
         gridKeepCentered = props.getGridKeepCentered();
         gridURL = props.getGridURL();
         gridLatestData = props.getGridLatestData();
@@ -194,6 +182,7 @@ public enum Parameters
         survivalStates = props.getSurvivalStates();
         birthStates = props.getBirthStates();        
         patternName = props.getPatternName();
+        patternFileName = props.getPatternFileName();
         authorName = props.getAuthorName();
         authorEmail = props.getAuthorEmail();
         authorTime = props.getAuthorTime();
@@ -261,10 +250,12 @@ public enum Parameters
      * Listeners will be invoked for every notification event.
      * 
      * @param listener  the given NotificationListener
+     * 
+     * @see ActionRegistrar#addNotificationListener(NotificationListener)
      */
     public void addNotificationListener( NotificationListener listener )
     {
-        notificationListeners.add( listener );
+        actionRegistrar.addNotificationListener( listener );
     }
     
     /**
@@ -275,12 +266,13 @@ public enum Parameters
      * 
      * @param listener  the given NotificationListener
      * @param property  the given property
+     * 
+     * @see ActionRegistrar#addNotificationListener(String, NotificationListener)
      */
     public void 
     addNotificationListener( String property, NotificationListener listener )
     {
-        notificationListeners.add( listener );
-        notificationPropertyMap.put( listener, property );
+        actionRegistrar.addNotificationListener( property, listener );
     }
     
     /**
@@ -290,11 +282,12 @@ public enum Parameters
      * no action is taken.
      * 
      * @param listener  the given NotificationListener
+     * 
+     * @see ActionRegistrar#removeNotificationListener(NotificationListener)
      */
     public void removeNotificationListener( NotificationListener listener )
     {
-        notificationListeners.remove( listener );
-        notificationPropertyMap.remove( listener );
+        actionRegistrar.removeNotificationListener( listener );
     }
 
     /**
@@ -790,35 +783,6 @@ public enum Parameters
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }
-    
-    /**
-     * Gets a value that indicates if the the grid should attempt
-     * to center its live cells.
-     * 
-     * @return the value described above
-     */
-//    public boolean isGridCenter()
-//    {
-//        return gridCenter;
-//    }
-
-    /**
-     * Sets a value that indicates if the the grid should attempt
-     * to center its live cells.
-     * This method propagates a PropertyChange event
-     * for property GOLConstants.CTRL_CENTER_PN.
-     * 
-     * @param gridCenter    true to center the grid
-     */
-    public void setGridCenter( boolean gridCenter )
-    {
-        Boolean oldValue    = this.gridCenter;
-        Boolean newValue    = gridCenter;
-        String  propName    = CTRL_CENTER_PN;
-        this.gridCenter = gridCenter;
-        propChangeSupport.
-            firePropertyChange( propName, oldValue, newValue );
-    }
 
     /**
      * Sets a value of the most recent cell on the grid
@@ -953,6 +917,36 @@ public enum Parameters
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }
+    
+    /**
+     * Gets the name of the file containing 
+     * the pattern being displayed/documented.
+     * 
+     * @return  the name of the file containing
+     *          the pattern being displayed/documented
+     */
+    public String getPatternFileName()
+    {
+        return patternName;
+    }
+
+    /**
+     * Sets the name of the file of the pattern being displayed/documented
+     * to the given value.
+     * This method propagates a PropertyChange event
+     * for property GOLConstants.MISC_PATTERN_NAME_PN.
+     * 
+     * @param patternFileName the given value
+     */
+    public void setPatternFileName( String patternFileName )
+    {
+        String  oldValue    = this.patternFileName;
+        String  newValue    = patternFileName;
+        String  propName    = GOLConstants.MISC_PATTERN_FILE_NAME_PN;
+        this.patternFileName = patternFileName;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
 
     /**
      * Gets the name of the author of the pattern being documented/displayed.
@@ -1065,17 +1059,12 @@ public enum Parameters
      * 
      * @param property  the given property
      * @param source    the given object (source)
+     * 
+     * @see ActionRegistrar#fireNotificationEvent(String,Object)
      */
     private void fireNotificationEvent( String property, Object source )
     {
-        NotificationEvent   event   =
-            new NotificationEvent( source, property );
-        for ( NotificationListener listener : notificationListeners )
-        {
-            String  mappedProperty  = notificationPropertyMap.get( listener );
-            if ( mappedProperty == null || mappedProperty.equals( property ) )
-                listener.notification( event );
-        }
+        actionRegistrar.fireNotificationEvent( property, source );
     }
     
     /**
@@ -1085,6 +1074,8 @@ public enum Parameters
      * <em>this</em> Parameters object.
      * 
      * @param property  the given property
+     * 
+     * @see ActionRegistrar#fireNotificationEvent(String)
      */
     private void fireNotificationEvent( String property )
     {

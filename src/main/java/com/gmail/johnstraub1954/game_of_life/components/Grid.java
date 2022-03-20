@@ -163,14 +163,6 @@ public class Grid extends JPanel implements PropertyChangeListener
     
     private void centerGrid()
     {
-//        Rectangle   rect    = gridMap.getLiveRectangle();
-//        int         centerX = rect.x + rect.width / 2;
-//        int         centerY = rect.y + rect.height / 2;
-//        int         width   = getWidth() / gridCellSize;
-//        int         height  = getHeight() / gridCellSize;
-//        int         xco     = centerX - width / 2;
-//        int         yco     = centerY + height / 2;
-//        gridCellULC = new Point( xco, yco );
         Rectangle   rect    = gridMap.getLiveRectangle();
         int         width   = getWidth() / gridCellSize;
         int         height  = getHeight() / gridCellSize;

@@ -44,6 +44,8 @@ public class ActionRegistrar
      * Listeners will be invoked for every notification event.
      * 
      * @param listener  the given NotificationListener
+     * 
+     * @see #addNotificationListener(String, NotificationListener)
      */
     public void addNotificationListener( NotificationListener listener )
     {
@@ -58,6 +60,8 @@ public class ActionRegistrar
      * 
      * @param listener  the given NotificationListener
      * @param property  the given property
+     * 
+     * @see #addNotificationListener(NotificationListener)
      */
     public void 
     addNotificationListener( String property, NotificationListener listener )
@@ -79,15 +83,25 @@ public class ActionRegistrar
         notificationListeners.remove( listener );
         notificationPropertyMap.remove( listener );
     }
+
     /**
      * Fires a NotificationEvent associated with a given property
-     * to all NotificationListeners, using the given object
-     * as the source of the event.
+     * to NotificationListeners.
+     * If non-null, the source of the event will be the
+     * <em>source</em> parameter;
+     * if <em>source</em> is null, the source will be 
+     * <em>this</em> ActionRegistrar object.
+     * After propagating the notification explicitly sends
+     * a reset notification.
+     * To suppress the reset notification, 
+     * use {@link #fireNotificationEvent(String,Object,boolean)}
      * 
      * @param property  the given property
-     * @param source    the given object (source)
+     * @param source    source of the event; may be null
+     * 
+     * @see #fireNotificationEvent(String, Object, boolean)
      */
-    private void fireNotificationEvent( String property, Object source )
+    public void fireNotificationEvent( String property, Object source )
     {
         NotificationEvent   event   =
             new NotificationEvent( source, property );
@@ -102,13 +116,40 @@ public class ActionRegistrar
     /**
      * Fires a NotificationEvent associated with a given property
      * to NotificationListeners.
-     * The source of the event will be 
-     * <em>this</em> Parameters object.
+     *  The source of the event will be <em>this</em> ActionRegistrar object.
+     * After propagating the notification explicitly sends
+     * a reset notification.
+     * To suppress the reset notification, 
+     * use {@link #fireNotificationEvent(String,Object,boolean)}
      * 
      * @param property  the given property
+     * 
+     * @see #fireNotificationEvent(String, Object, boolean)
      */
-    private void fireNotificationEvent( String property )
+    public void fireNotificationEvent( String property )
+    {
+        fireNotificationEvent( property, this, true );
+    }
+    
+    /**
+     * Fires a NotificationEvent associated with a given property
+     * to NotificationListeners.
+     * If non-null, the source of the event will be the
+     * <em>source</em> parameter;
+     * if <em>source</em> is null, the source will be 
+     * <em>this</em> ActionRegistrar object.
+     * After propagating the notification related to the given property,
+     * optionally issues a reset notification.
+     * 
+     * @param property  the given property
+     * @param source    source of the event; may be null
+     * @param reset     true to automatically generate a reset notification
+     */
+    public void 
+    fireNotificationEvent( String property, Object source, boolean reset )
     {
         fireNotificationEvent( property, this );
+        if ( reset )
+            Parameters.INSTANCE.reset();
     }
 }

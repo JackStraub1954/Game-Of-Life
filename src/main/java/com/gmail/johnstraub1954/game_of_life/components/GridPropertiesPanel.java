@@ -32,6 +32,8 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.gmail.johnstraub1954.game_of_life.main.ActionRegistrar;
+import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 public class GridPropertiesPanel extends JPanel
@@ -55,13 +57,14 @@ public class GridPropertiesPanel extends JPanel
     private static final int        cellSizeMax     = 128;
     /** size of a step when manipulating cell-size spinner */
     private static final int        cellSizeStep    = 1;
+    
+    /** Object that notifies NotificationListeners of apply actions */
+    private final ActionRegistrar   actionRegistrar;
 
-    public GridPropertiesPanel()
+    public GridPropertiesPanel( ActionRegistrar actionRegistrar)
     {
         super( new GridBagLayout() );
-//        Border  border  = BorderFactory
-//            .createEmptyBorder( margin, margin, margin, margin );
-//        setBorder( border );
+        this.actionRegistrar = actionRegistrar;
         
         Border  emptyBorder = BorderFactory
             .createEmptyBorder( margin, margin, margin, margin );
@@ -155,7 +158,7 @@ public class GridPropertiesPanel extends JPanel
         add( checkBox, gbc );
 }
 
-    private static class ColorPanel 
+    private class ColorPanel 
         extends JPanel 
         implements ActionListener
     {
@@ -183,8 +186,9 @@ public class GridPropertiesPanel extends JPanel
             
             add( button );
             add( label );
-            params.addPropertyChangeListener(
-                propertyName, e -> label.setBackground( supplier.get() ) 
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_APPLY_PN,
+                e -> consumer.accept(label.getBackground() )
             );
             
         }
@@ -208,15 +212,12 @@ public class GridPropertiesPanel extends JPanel
             if ( color != null )
             {
                 label.setBackground( color );
-                consumer.accept( color );
-                params.reset();
             }
         }
     }
     
-    private static class SpinnerNumberPanel 
+    private class SpinnerNumberPanel 
         extends JPanel
-        implements ChangeListener
     {
         private final IntConsumer   consumer;
         
@@ -239,36 +240,37 @@ public class GridPropertiesPanel extends JPanel
             SpinnerNumberModel  model   = 
                 new SpinnerNumberModel( val, min, max, step );
             JSpinner    spinner = new JSpinner( model );
-            spinner.addChangeListener( this );
+//            spinner.addChangeListener( this );
             add( label );
             add( spinner );
-            params.addPropertyChangeListener( 
-                propertyName, e -> model.setValue( supplier.getAsInt() )
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_APPLY_PN,
+                e -> consumer.accept( model.getNumber().intValue() )
             );
         }
         
-        @Override
-        public void stateChanged( ChangeEvent evt )
-        {
-            Object  source  = evt.getSource();
-            if ( !( source instanceof JSpinner) )
-                return;
-            
-            JSpinner            spinner     = (JSpinner)source;
-            SpinnerModel        model       = spinner.getModel();
-            if ( !(model instanceof SpinnerNumberModel) )
-                return;
-            
-            SpinnerNumberModel  numberModel = (SpinnerNumberModel)model;
-            int             val             = (int)numberModel.getNumber();
-            consumer.accept( val );
-            params.reset();
-        }
+//        @Override
+//        public void stateChanged( ChangeEvent evt )
+//        {
+//            Object  source  = evt.getSource();
+//            if ( !( source instanceof JSpinner) )
+//                return;
+//            
+//            JSpinner            spinner     = (JSpinner)source;
+//            SpinnerModel        model       = spinner.getModel();
+//            if ( !(model instanceof SpinnerNumberModel) )
+//                return;
+//            
+//            SpinnerNumberModel  numberModel = (SpinnerNumberModel)model;
+//            int             val             = (int)numberModel.getNumber();
+//            consumer.accept( val );
+//            params.reset();
+//        }
     }
     
-    private static class CheckBox 
+    private class CheckBox 
         extends JCheckBox
-        implements ChangeListener
+//        implements ChangeListener
     {
         private final Consumer<Boolean> consumer;
         
@@ -282,7 +284,7 @@ public class GridPropertiesPanel extends JPanel
             super( text );
             this.consumer = consumer;
             setSelected( supplier.get() );
-            addChangeListener( this );
+//            addChangeListener( this );
             addComponentListener( 
                 new ComponentAdapter()
                 {
@@ -295,20 +297,24 @@ public class GridPropertiesPanel extends JPanel
                     }
                 }
             );
-            params.addPropertyChangeListener(
-                propertyName, e -> setSelected( supplier.get() ) 
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_APPLY_PN,
+                e -> consumer.accept( isSelected() )
             );
+//            params.addPropertyChangeListener(
+//                propertyName, e -> setSelected( supplier.get() ) 
+//            );
         }
 
-        @Override
-        public void stateChanged( ChangeEvent evt )
-        {
-            Object  source  = evt.getSource();
-            if ( !(source instanceof JCheckBox) )
-                return;
-            JCheckBox   checkBox    = (JCheckBox)source;
-            consumer.accept( checkBox.isSelected() );
-            params.reset();
-        }
+//        @Override
+//        public void stateChanged( ChangeEvent evt )
+//        {
+//            Object  source  = evt.getSource();
+//            if ( !(source instanceof JCheckBox) )
+//                return;
+//            JCheckBox   checkBox    = (JCheckBox)source;
+//            consumer.accept( checkBox.isSelected() );
+//            params.reset();
+//        }
     }
 }

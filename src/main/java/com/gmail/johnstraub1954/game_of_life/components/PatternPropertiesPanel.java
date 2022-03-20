@@ -1,21 +1,15 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_EMAIL_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_PN;
-import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
-
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.border.Border;
 
+import com.gmail.johnstraub1954.game_of_life.main.ActionRegistrar;
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
@@ -36,20 +31,13 @@ public class PatternPropertiesPanel extends JPanel
     /** for creating empty border around this panel */
     private static final int        margin              = 5;
     
-    /** Component that notifies ActionListeners of apply actions */
-    private final AbstractButton    applyButton;
-    /** Component that notifies ActionListeners of cancel actions */
-    private final AbstractButton    cancelButton;
-    
-    
-    public PatternPropertiesPanel( 
-        AbstractButton applyButton, 
-        AbstractButton cancelButton 
-    )
+    /** Object that notifies NotificationListeners of apply actions */
+    private final ActionRegistrar   actionRegistrar;
+
+    public PatternPropertiesPanel( ActionRegistrar actionRegistrar )
     {
         super( new GridBagLayout() );
-        this.applyButton = applyButton;
-        this.cancelButton = cancelButton;
+        this.actionRegistrar = actionRegistrar;
         
         Border  emptyBorder = BorderFactory
             .createEmptyBorder( margin, margin, margin, margin );
@@ -67,7 +55,7 @@ public class PatternPropertiesPanel extends JPanel
         TextFieldPanel  textPanel   = null;
         textPanel = new TextFieldPanel( 
             "Pattern Name",
-            MISC_PATTERN_NAME_PN,
+            GOLConstants.MISC_PATTERN_NAME_PN,
             s -> params.setPatternName( s ),
             () -> params.getPatternName()
         );
@@ -79,7 +67,7 @@ public class PatternPropertiesPanel extends JPanel
         
         textPanel = new TextFieldPanel( 
             "Author Name",
-            MISC_AUTHOR_NAME_PN,
+            GOLConstants.MISC_AUTHOR_NAME_PN,
             s -> params.setAuthorName( s ),
             () -> params.getAuthorName()
         );
@@ -91,7 +79,7 @@ public class PatternPropertiesPanel extends JPanel
         
         textPanel = new TextFieldPanel( 
             "Author Email",
-            MISC_AUTHOR_EMAIL_PN,
+            GOLConstants.MISC_AUTHOR_EMAIL_PN,
             s -> params.setAuthorEmail( s ),
             () -> params.getAuthorEmail()
         );
@@ -100,7 +88,20 @@ public class PatternPropertiesPanel extends JPanel
         
         add( new HSeparator( 3, true ), gbc );
         gbc.gridy++;
+
+
+        textPanel = new TextFieldPanel( 
+            "Pattern File Name",
+            GOLConstants.MISC_PATTERN_FILE_NAME_PN,
+            s -> params.setPatternFileName( s ),
+            () -> params.getPatternFileName()
+        );
+        add( textPanel, gbc );
+        gbc.gridy++;
         
+        add( new HSeparator( 3, true ), gbc );
+        gbc.gridy++;
+
         SpinnerDatePanel    datePanel   = new SpinnerDatePanel(
             "Author Date",
             GOLConstants.MISC_AUTHOR_TIME_PN,
@@ -156,11 +157,11 @@ public class PatternPropertiesPanel extends JPanel
     private static List<Integer> cvtCSVToList( String csv )
     {
         List<Integer>   list    = new ArrayList<>();
-        String[]        strs    = csv.split( "[\\s,]*" );
+        String[]        strs    = csv.split( "," );
         try
         {
             for ( String str : strs )
-                list.add( Integer.parseInt( str ) );
+                list.add( Integer.parseInt( str.trim() ) );
         }
         catch ( NumberFormatException exc )
         {
@@ -194,7 +195,8 @@ public class PatternPropertiesPanel extends JPanel
                 propertyName, 
                 e -> textField.setText( (String)e.getNewValue() )
             );
-            applyButton.addActionListener( 
+            actionRegistrar.addNotificationListener( 
+                GOLConstants.ACTION_APPLY_PN,
                 e -> consumer.accept( textField.getText() )
             );
             
@@ -218,7 +220,8 @@ public class PatternPropertiesPanel extends JPanel
             add( label );
             add( textField );
             
-            applyButton.addActionListener(
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_APPLY_PN,
                 e -> consumer.accept( cvtCSVToList( textField.getText() ) ) 
             );
             

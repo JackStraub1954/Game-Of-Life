@@ -6,6 +6,7 @@ package com.gmail.johnstraub1954.game_of_life.main;
  * 
  * @author Jack Straub
  *
+ *  TODO gridInteractiveOn
  */
 public class GOLConstants
 {
@@ -227,8 +228,6 @@ public class GOLConstants
     public static final String  CTRL_BIRTH_STATES_PN    = "birthStates";
     /** Survival states, default value */
     public static final String  CTRL_BIRTH_STATES_DV    = "3";
-    /** Center rectangle containing live cells in the grid. */
-    public static final String  CTRL_CENTER_PN          = "centerGrid";
     /** Center rectangle containing live cells default value. */
     public static final String  CTRL_CENTER_DV          = "false";
     /** URL of file/web link to read and display */
@@ -263,7 +262,6 @@ public class GOLConstants
     /** Property associated with firing an "OK" action.*/
     public static final String  ACTION_OKAY_PN          = "okay";
 
-
     ////////////////////////////////////////
     //
     // MISCELLANEOUS PROPERTIES
@@ -273,22 +271,102 @@ public class GOLConstants
     ////////////////////////////////////////
     
     /** Name of the pattern being documented/displayed. */
-    public static final String  MISC_PATTERN_NAME_PN    = "patternName";
+    public static final String  MISC_PATTERN_NAME_PN        = "patternName";
     /** Pattern name default value. */
-    public static final String  MISC_PATTERN_NAME_DV    = "";
+    public static final String  MISC_PATTERN_NAME_DV        = "";
+    /** The name of the file containing the pattern */
+    public static final String  MISC_PATTERN_FILE_NAME_PN   = 
+        "patternFileName";
+    /** The default value of the name of the file containing the pattern */
+    public static final String  MISC_PATTERN_FILE_NAME_DV   = "";
     /** Author name of the pattern being documented/displayed. */
-    public static final String  MISC_AUTHOR_NAME_PN     = "authorName";
+    public static final String  MISC_AUTHOR_NAME_PN         = "authorName";
     /** Author name default value. */
-    public static final String  MISC_AUTHOR_NAME_DV     = "";
+    public static final String  MISC_AUTHOR_NAME_DV         = "";
     /** Author email address. */
-    public static final String  MISC_AUTHOR_EMAIL_PN    = "authorEmail";
+    public static final String  MISC_AUTHOR_EMAIL_PN        = "authorEmail";
     /** Author email address default value. */
-    public static final String  MISC_AUTHOR_EMAIL_DV    = "";
+    public static final String  MISC_AUTHOR_EMAIL_DV        = "";
     /** 
      * Creation date/time of pattern; to be displayed on the author line 
      * of the documentation header.
      */
-    public static final String  MISC_AUTHOR_TIME_PN     = "authorTime";
+    public static final String  MISC_AUTHOR_TIME_PN         = "authorTime";
     /** Author creation date default value. */
-    public static final String  MISC_AUTHOR_TIME_DV     = "";
+    public static final String  MISC_AUTHOR_TIME_DV         = "";
+    
+
+    ////////////////////////////////////////
+    //
+    // COMPONENT NAMES
+    // The names of GUI components, such as the panel that displays the
+    // grid, or the dialog that is used to set property names.
+    // These are pretty exclusively for testing.
+    //
+    ////////////////////////////////////////
+    
+    ////////////////////////////////
+    // preferences dialog
+    ////////////////////////////////    
+    /** The name of the dialog that manages preferences */
+    public static final String  PREF_DLG_CN         = "preferencesDialog";
+    /** The name of the component that initiates setting the grid color */
+    public static final String  PREF_GRID_COLOR_CN  = 
+       PREF_DLG_CN + ".gridColorComp";
+    /** The name of the component that displays the selected grid color */
+    public static final String  PREF_GRID_COLOR_FB_CN  = 
+       PREF_DLG_CN + ".gridColorComp";
+    /** The name of the component that initiates setting the cell color */
+    public static final String  PREF_CELL_COLOR_CN  = 
+       PREF_DLG_CN + ".cellColorComp";
+    /** The name of the component that displays the selected grid color */
+    public static final String  PREF_CELL_COLOR_FB_CN  = 
+       PREF_DLG_CN + ".gridColorComp";
+    /** The name of the component that initiates setting the grid line color */
+    public static final String  PREF_LINE_COLOR_CN  = 
+       PREF_DLG_CN + ".lineColorComp";
+    /** The name of the component that displays the selected line color */
+    public static final String  PREF_LINE_COLOR_FB_CN  = 
+       PREF_DLG_CN + ".gridColorComp";
+    
+    /** The name of the component that contains the grid width */
+    public static final String PREF_LINE_WIDTH_CN  = 
+       PREF_DLG_CN + ".lineWidthComp";
+    /** The name of the component that contains the cell size*/
+    public static final String PREF_CELL_SIZE_CN   = 
+       PREF_DLG_CN + ".lineColorButton";
+    /** The name of the component that contains the "show grid" value */
+    public static final String PREF_SHOW_GRID_CN   = 
+       PREF_DLG_CN + ".lineShowGrid";
+    
+    /** The name of the component that contains the pattern name */
+    public static final String PREF_PATTERN_NAME_CN    = 
+       PREF_DLG_CN + ".patternName";
+    /** The name of the component that contains the author name */
+    public static final String PREF_AUTHOR_NAME_CN     = 
+       PREF_DLG_CN + ".authorName";
+    /** The name of the component that contains the author email address */
+    public static final String PREF_EMAIL_NAME_CN      = 
+       PREF_DLG_CN + ".authorEmail";
+    /** The name of the component that contains the modification date */
+    public static final String PREF_DATE_CN            = 
+       PREF_DLG_CN + ".date";
+    /** The name of the component that contains the pattern file name */
+    public static final String PREF_FILE_NAME_CN       = 
+       PREF_DLG_CN + ".fileName";
+    /** The name of the component that contains the birth rules */
+    public static final String PREF_BIRTH_RULES_CN     = 
+       PREF_DLG_CN + ".birthRules";
+    /** The name of the component that contains the survival rules */
+    public static final String PREF_SURVIVAL_RULES_CN  = 
+       PREF_DLG_CN + ".survivalRules";
+    /** The name of the preferences dialog apply; button */
+    public static final String PREF_APPLY_BUTTON_CN   = 
+       PREF_DLG_CN + ".applyButton";
+    /** The name of the preferences dialog cancel; button */
+    public static final String PREF_CANCEL_BUTTON_CN   = 
+       PREF_DLG_CN + ".cancelButton";
+    /** The name of the preferences dialog OK button */
+    public static final String PREF_OK_BUTTON_CN       = 
+        PREF_DLG_CN + ".okButton";
 }
