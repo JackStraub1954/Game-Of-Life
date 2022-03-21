@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 
 import test_utils.ComponentUtils;
+import test_utils.TestUtils;
 
 class GridPropertiesPanelTest
 {
@@ -81,30 +82,42 @@ class GridPropertiesPanelTest
     @AfterEach
     public void afterEach()
     {
+//        System.out.println( "afterEach" );
+//        TestUtils.pause( 3000 );
         if ( prefDlg.isVisible() )
             prefDlg.setVisible( false );
         prefDlg.dispose();
     }
 
     @Test
-    void test()
+    void test1()
     {
         System.out.println( applyButton.getText() );
     }
+
+    @Test
+    void test2()
+    {
+        System.out.println( gridColorButton.getText() );
+        gridColorButton.doClick();
+        TestUtils.pause( 3000 );
+    }
+
+    @Test
+    void test3()
+    {
+        System.out.println( cellColorButton.getText() );
+        cellColorButton.doClick();
+        TestUtils.pause( 3000 );
+    }
     
     /**
-     * Start the preferences dialog on a new event thread.
+     * Start the preferences dialog on a separate thread.
      * Pause to give the thread time to spin up.
      */
     private void showDialog()
     {
-        try
-        {
-            SwingUtilities.invokeAndWait( () -> prefDlg.setVisible( true ) );
-        }
-        catch ( InterruptedException | InvocationTargetException exc )
-        {
-            fail( "Unexpected exception", exc );
-        }
+        new Thread( () -> prefDlg.setVisible( true ) ).start();
+        TestUtils.pause( 250 );
     }
 }

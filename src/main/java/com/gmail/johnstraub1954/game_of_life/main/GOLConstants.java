@@ -315,19 +315,19 @@ public class GOLConstants
        PREF_DLG_CN + ".gridColorComp";
     /** The name of the component that displays the selected grid color */
     public static final String  PREF_GRID_COLOR_FB_CN  = 
-       PREF_DLG_CN + ".gridColorComp";
+       PREF_DLG_CN + ".gridColorFBComp";
     /** The name of the component that initiates setting the cell color */
     public static final String  PREF_CELL_COLOR_CN  = 
        PREF_DLG_CN + ".cellColorComp";
     /** The name of the component that displays the selected grid color */
     public static final String  PREF_CELL_COLOR_FB_CN  = 
-       PREF_DLG_CN + ".gridColorComp";
+       PREF_DLG_CN + ".cellColorFBComp";
     /** The name of the component that initiates setting the grid line color */
     public static final String  PREF_LINE_COLOR_CN  = 
        PREF_DLG_CN + ".lineColorComp";
     /** The name of the component that displays the selected line color */
     public static final String  PREF_LINE_COLOR_FB_CN  = 
-       PREF_DLG_CN + ".gridColorComp";
+       PREF_DLG_CN + ".gridLineFBComp";
     
     /** The name of the component that contains the grid width */
     public static final String PREF_LINE_WIDTH_CN  = 
