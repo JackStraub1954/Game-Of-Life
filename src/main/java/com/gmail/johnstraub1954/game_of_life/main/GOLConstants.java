@@ -261,6 +261,8 @@ public class GOLConstants
     public static final String  ACTION_CANCEL_PN        = "cancel";
     /** Property associated with firing an "OK" action.*/
     public static final String  ACTION_OKAY_PN          = "okay";
+    /** Property associated with opening a dialog */
+    public static final String  ACTION_OPENED_PN        = "opened";
 
     ////////////////////////////////////////
     //
@@ -346,10 +348,10 @@ public class GOLConstants
     public static final String PREF_AUTHOR_NAME_CN     = 
        PREF_DLG_CN + ".authorName";
     /** The name of the component that contains the author email address */
-    public static final String PREF_EMAIL_NAME_CN      = 
+    public static final String PREF_AUTHOR_EMAIL_CN      = 
        PREF_DLG_CN + ".authorEmail";
     /** The name of the component that contains the modification date */
-    public static final String PREF_DATE_CN            = 
+    public static final String PREF_AUTHOR_TIME_CN            = 
        PREF_DLG_CN + ".date";
     /** The name of the component that contains the pattern file name */
     public static final String PREF_FILE_NAME_CN       = 

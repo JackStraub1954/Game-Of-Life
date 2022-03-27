@@ -12,8 +12,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
@@ -26,18 +24,27 @@ import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.gmail.johnstraub1954.game_of_life.main.ActionRegistrar;
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
+/**
+ * A panel used to edit grid properties, 
+ * such as grid color, grid cell color and grid line width.
+ * Usually used as a child of a dialog.<br>
+ * 
+ * <img src="doc-files/GridPropertiesPanel.png" alt="GridPropertiesPanel.png">
+ * 
+ * @author Jack Straub
+ */
 public class GridPropertiesPanel extends JPanel
 {
+    /** Generated serial version UID */
+    private static final long serialVersionUID = 1388936646835938326L;
+
     /** Parameter collector for this application */
     private static final Parameters params  = Parameters.INSTANCE;
     
@@ -61,7 +68,14 @@ public class GridPropertiesPanel extends JPanel
     /** Object that notifies NotificationListeners of apply actions */
     private final ActionRegistrar   actionRegistrar;
 
-    public GridPropertiesPanel( ActionRegistrar actionRegistrar)
+    /**
+     * Constructor.
+     * The user includes an ActionRegistrar which can be used to link
+     * to actions in the parent dialog, such OK, Apply and Cancel.
+     * 
+     * @param actionRegistrar   link to actions in the parent dialog
+     */
+    public GridPropertiesPanel( ActionRegistrar actionRegistrar )
     {
         super( new GridBagLayout() );
         this.actionRegistrar = actionRegistrar;
@@ -79,18 +93,15 @@ public class GridPropertiesPanel extends JPanel
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        SpinnerNumberPanel    spinnerPanel    = null;
-        ColorPanel      colorPanel      = null;
-        add( new ColorPanel( 
+        ColorPanel  colorPanel  = new ColorPanel( 
             "Grid Color",
             "GRID_COLOR_PN",
             GOLConstants.PREF_GRID_COLOR_CN,
             GOLConstants.PREF_GRID_COLOR_FB_CN,
             c -> params.setGridColor( c ),
             () -> params.getGridColor()
-            ),
-            gbc
         );
+        add( colorPanel, gbc );
         gbc.gridy++;
         
         add( new HSeparator( 3, true ), gbc );
@@ -124,7 +135,7 @@ public class GridPropertiesPanel extends JPanel
         add( new HSeparator( 3, true ), gbc );
         gbc.gridy++;
         
-        spinnerPanel = new SpinnerNumberPanel(
+        SpinnerNumberPanel  spinnerPanel = new SpinnerNumberPanel(
             gridLineWidthMin,
             gridLineWidthMax,
             gridLineWidthStep,
@@ -165,14 +176,42 @@ public class GridPropertiesPanel extends JPanel
         );
         checkBox.setSelected( params.isGridLineShow() );
         add( checkBox, gbc );
-}
+    }
 
+    /**
+     * Creates a linked button/label pair.
+     * The button is used to launch a color chooser dialog;
+     * the label displays the chosen color.
+     * Components are laid out horizontally.
+     * The panel is also connected to the "apply" action
+     * in the parent dialog;
+     * when the apply action is propagated,
+     * the color from the feedback label is set
+     * in the appropriate property in the Parameters singleton.
+     * 
+     * @author Jack Straub
+     */
     private class ColorPanel 
         extends JPanel 
         implements ActionListener
     {
-        private final JLabel            label;
+        /** Generated serial version UID */
+        private static final long serialVersionUID = -7212071808089091404L;
         
+        /** The label that provides feedback */
+        private final JLabel    label;
+        
+        /**
+         * Constructor.
+         * 
+         * @param text          the text to display on the button
+         * @param propertyName  the name of the property being configured
+         * @param buttonCN      the component name of the button that
+         *                      will launch the color chooser dialog
+         * @param feedbackCN    the component name of the feedback label
+         * @param consumer      used to get the value of the linked property
+         * @param supplier      used to set the value of the linked property
+         */
         public ColorPanel( 
             String          text, 
             String          propertyName,
@@ -197,11 +236,17 @@ public class GridPropertiesPanel extends JPanel
             
             add( button );
             add( label );
+            
+            // link this panel to the apply action in the dialog parent
             actionRegistrar.addNotificationListener(
                 GOLConstants.ACTION_APPLY_PN,
                 e -> consumer.accept(label.getBackground() )
             );
             
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_OPENED_PN,
+                e -> label.setBackground( supplier.get() )
+            );
         }
         
         /**
@@ -220,6 +265,7 @@ public class GridPropertiesPanel extends JPanel
             Color   oldColor    = label.getBackground();
             Color   color   = 
                 JColorChooser.showDialog( this, title, oldColor );
+            System.out.println( color );
             if ( color != null )
             {
                 label.setBackground( color );
@@ -227,11 +273,39 @@ public class GridPropertiesPanel extends JPanel
         }
     }
     
+    /**
+     * Creates a label/JNumberSpinner pair.
+     * The label identifies the property
+     * controlled by the spinner.
+     * Components are laid out horizontally.
+     * The panel is also to the "apply" action
+     * in the parent dialog;
+     * when the apply action is propagated,
+     * the value from the spinner is set
+     * in the appropriate property in the Parameters singleton.
+     * 
+     * @author Jack Straub
+     */
     private class SpinnerNumberPanel 
         extends JPanel
     {
-        private final IntConsumer   consumer;
-        
+        /** Generated serial version UID */
+        private static final long serialVersionUID = -6148427940082811615L;
+
+        /**
+         * Constructor.
+         * 
+         * @param min           minimum value property of the spinner
+         * @param max           maximum value property of the spinner
+         * @param step          step property of the spinner
+         * @param text          text to display in the label
+         * @param propertyName  the name of the property being configured
+         * @param spinnerName   the component name of the spinner
+         * @param consumer      used to set the value of the property in
+         *                      the Parameters singleton
+         * @param supplier      used to get the value of the property in
+         *                      the Parameters singleton
+         */
         public SpinnerNumberPanel(
             int         min,
             int         max,
@@ -244,7 +318,6 @@ public class GridPropertiesPanel extends JPanel
         )
         {
             super( new GridLayout( 1, 2, 2, 2 ) );
-            this.consumer = consumer;
             JLabel  label   = new JLabel( text );
             label.setHorizontalAlignment( JLabel.RIGHT );
             
@@ -255,19 +328,40 @@ public class GridPropertiesPanel extends JPanel
             spinner.setName( spinnerName );
             add( label );
             add( spinner );
+            
             actionRegistrar.addNotificationListener(
                 GOLConstants.ACTION_APPLY_PN,
                 e -> consumer.accept( model.getNumber().intValue() )
             );
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_OPENED_PN,
+                e -> model.setValue( supplier.getAsInt() )
+            );
         }
     }
     
-    private class CheckBox 
-        extends JCheckBox
-//        implements ChangeListener
+    /**
+     * A subclass of JCheckBox that is used to configure the value
+     * of a Boolean property.
+     * 
+     * @author Jack Straub
+     */
+    private class CheckBox extends JCheckBox
     {
-        private final Consumer<Boolean> consumer;
-        
+        /** Generated serial version UID */
+        private static final long serialVersionUID = 992944997939260776L;
+
+        /**
+         * Constructor.
+         * 
+         * @param text          text to display on the check box
+         * @param propertyName  the name of the property being configured
+         * @param spinnerName   the component name of the check box
+         * @param consumer      used to set the value of the property in
+         *                      the Parameters singleton
+         * @param supplier      used to get the value of the property in
+         *                      the Parameters singleton
+         */
         public CheckBox( 
             String              text, 
             String              propertyName,
@@ -277,39 +371,16 @@ public class GridPropertiesPanel extends JPanel
         )
         {
             super( text );
-            this.consumer = consumer;
             setName( checkBoxName );
             setSelected( supplier.get() );
-            addComponentListener( 
-                new ComponentAdapter()
-                {
-                    @Override
-                    public void componentShown( ComponentEvent evt )
-                    {
-                        System.out.println( "check box" );
-                        JCheckBox   checkBox    = (JCheckBox)evt.getSource();
-                        checkBox.setSelected( supplier.get() );
-                    }
-                }
-            );
             actionRegistrar.addNotificationListener(
                 GOLConstants.ACTION_APPLY_PN,
                 e -> consumer.accept( isSelected() )
             );
-//            params.addPropertyChangeListener(
-//                propertyName, e -> setSelected( supplier.get() ) 
-//            );
+            actionRegistrar.addNotificationListener(
+                GOLConstants.ACTION_OPENED_PN,
+                e -> model.setSelected( supplier.get() )
+            );
         }
-
-//        @Override
-//        public void stateChanged( ChangeEvent evt )
-//        {
-//            Object  source  = evt.getSource();
-//            if ( !(source instanceof JCheckBox) )
-//                return;
-//            JCheckBox   checkBox    = (JCheckBox)source;
-//            consumer.accept( checkBox.isSelected() );
-//            params.reset();
-//        }
     }
 }

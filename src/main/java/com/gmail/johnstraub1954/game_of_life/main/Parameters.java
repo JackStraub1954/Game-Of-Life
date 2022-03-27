@@ -927,7 +927,7 @@ public enum Parameters
      */
     public String getPatternFileName()
     {
-        return patternName;
+        return patternFileName;
     }
 
     /**
