@@ -371,4 +371,75 @@ public class GOLConstants
     /** The name of the preferences dialog OK button */
     public static final String PREF_OK_BUTTON_CN       = 
         PREF_DLG_CN + ".okButton";
+    
+    ////////////////////////////////
+    // main frame panels
+    ////////////////////////////////
+    /**
+     * The name of the main frame, which contains the grid,
+     * the generation panel, the controls panel and the URL panel.
+     */
+    public static final String  MAIN_FRAME_CN           = "mainFrame";
+
+    ////////////////////////////////
+    // generator panel
+    ////////////////////////////////
+    /** The name of the next generation button */
+    public static final String  GEN_NEXT_BUTTON_CN      =
+        MAIN_FRAME_CN + ".nextGenerationButton";
+    /** The name of the rewind button */
+    public static final String  GEN_REWIND_BUTTON_CN    =
+        MAIN_FRAME_CN + ".nextGenerationButton";
+    /** 
+     * The name of the component that displays feedback from the
+     * "generations per second" control
+     */
+    public static final String  GEN_FEEDBACK_COMP_CN    =
+        MAIN_FRAME_CN + ".genPerSecFeedbackComponent";
+    /** The name of the "generations per second" control */
+    public static final String  GEN_PER_SEC_COMP_CN     =
+        MAIN_FRAME_CN + ".genPerSecComponent";
+    /** The name of the "animate" control */
+    public static final String  GEN_ANIMATE_TOGGLE_CN   =
+        MAIN_FRAME_CN + ".genPerSecComponent";
+
+    ////////////////////////////////
+    // controls panel
+    ////////////////////////////////
+    /** The name of the cell size component */
+    public static final String  CTRL_CELL_SIZE_COMP_CN  =
+        MAIN_FRAME_CN + ".cellSizeSpinner";
+    /** The name of the show-grid component */
+    public static final String  CTRL_SHOW_GRID_COMP_CN  =
+        MAIN_FRAME_CN + ".showGridCheckBox";
+    /** The name of the keep-centered component */
+    public static final String  CTRL_KEEP_CENTERED_COMP_CN  =
+        MAIN_FRAME_CN + ".keepCenteredCheckBox";
+    /** The name of the center-grid component */
+    public static final String  CTRL_CENTER_COMP_CN     =
+        MAIN_FRAME_CN + ".centerGridButton";
+
+    ////////////////////////////////
+    // URL panel
+    ////////////////////////////////
+    /** The name of the URL text field */
+    public static final String  URL_TEXT_FIELD_CN       =
+        MAIN_FRAME_CN + ".urlTextField";
+    /** The name of the open-URL button */
+    public static final String  URL_OPEN_BUTTON_CN      =
+        MAIN_FRAME_CN + ".urlOpenButton";
+    /** The name of the select-file button */
+    public static final String  URL_SELECT_FILE_BUTTON_CN   =
+        MAIN_FRAME_CN + ".selectFileButton";
+
+    ////////////////////////////////
+    // outer grid panel
+    ////////////////////////////////
+    /** The name of the outer grid panel*/
+    public static final String  GRID_OUTER_PANEL_CN     =
+        MAIN_FRAME_CN + ".gridOuterPanel";
+
+    /** The name of the grid panel*/
+    public static final String  GRID_PANEL_CN           =
+        MAIN_FRAME_CN + ".gridPanel";
 }

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 /**
@@ -41,9 +42,12 @@ public class GridOuterPanel extends JPanel
      */
     public GridOuterPanel()
     {
+        setName( GOLConstants.GRID_OUTER_PANEL_CN );
+
         // the outer panel is going to be responsible for laying out the
         // grid panel, so get rid of the grid panel's layout manager.
         gridPanel.setLayout( null );
+        gridPanel.setName( GOLConstants.GRID_PANEL_CN );
         add( gridPanel );
         
         // the preferred size of the outer panel

@@ -7,7 +7,9 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -34,6 +36,24 @@ public class ComponentUtils
         assertTrue( comp instanceof JButton );
         JButton button  = (JButton)comp;
         return button;
+    }
+    
+    public static JSlider getJSlider( String name )
+    {
+        Component   comp    = ComponentLocator.getComponent( name );
+        assertNotNull( comp );
+        assertTrue( comp instanceof JButton );
+        JSlider     slider  = (JSlider)comp;
+        return slider;
+    }
+    
+    public static JComponent getJComponent( String name )
+    {
+        Component   comp    = ComponentLocator.getComponent( name );
+        assertNotNull( comp );
+        assertTrue( comp instanceof JComponent );
+        JComponent  jComp   = (JComponent)comp;
+        return jComp;
     }
 
     public static JTextField getJTextField( String name )

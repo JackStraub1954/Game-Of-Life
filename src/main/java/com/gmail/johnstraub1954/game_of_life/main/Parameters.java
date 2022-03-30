@@ -95,8 +95,6 @@ public enum Parameters
      * of the physical grid.
      */
     private Point               gridCellOrigin;
-    /** Indicates whether the grid should attempt to center its live cells. */
-    private boolean             gridCenter;
     /** 
      * Indicates whether the application should try to center the grid
      * with each new generation.
@@ -798,7 +796,7 @@ public enum Parameters
     }
     
     /**
-     * Returns the value of a URL for using to populate a grid.
+     * Returns the value of a URL to use to populate a grid.
      * Will return null if there is no such URL.
      * 
      * @return  the value of a URL for using to populate a grid,
@@ -883,7 +881,7 @@ public enum Parameters
     public void setGridLatestData( RLEInput input )
     {
         Object  oldValue    = gridLatestData;
-        Object  newValue    = gridLatestData;
+        Object  newValue    = input;
         String  propName    = CTRL_GRID_LATEST_PN;
         gridLatestData = input;
         propChangeSupport.

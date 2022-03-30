@@ -12,6 +12,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 
+import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 public class ControlsPanel extends JPanel
@@ -68,6 +69,7 @@ public class ControlsPanel extends JPanel
         cellSizeSpinner.setMaximumSize( 
             cellSizeSpinner.getPreferredSize() );
         cellSizeSpinner.addChangeListener( e -> tweakCellSize( e ) );
+        cellSizeSpinner.setName( GOLConstants.CTRL_CELL_SIZE_COMP_CN );
         
         cellSizePanel.setLayout(
             new BoxLayout( cellSizePanel, BoxLayout.X_AXIS ) );
@@ -81,6 +83,9 @@ public class ControlsPanel extends JPanel
         checkBoxPanel.setAlignmentX( Component.CENTER_ALIGNMENT );
         checkBoxPanel.add( showGridCheckBox );
         checkBoxPanel.add( keepCenteredCheckBox );
+        keepCenteredCheckBox
+            .setName( GOLConstants.CTRL_KEEP_CENTERED_COMP_CN );
+        
         showGridCheckBox.setSelected( params.isGridLineShow() );
         showGridCheckBox.addChangeListener( e -> tweakGridOn( e ) );
         keepCenteredCheckBox.
@@ -89,6 +94,7 @@ public class ControlsPanel extends JPanel
         
         centerGridButton.setAlignmentX( Component.CENTER_ALIGNMENT );
         centerGridButton.addActionListener( e -> params.centerGrid() );
+        centerGridButton.setName( GOLConstants.CTRL_CENTER_COMP_CN );
         add( centerGridButton );
     }
     

@@ -5,13 +5,16 @@ import java.awt.Component;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.gmail.johnstraub1954.game_of_life.components.PatternPropertiesPanel;
-import com.gmail.johnstraub1954.game_of_life.main.ActionRegistrar;
+import com.gmail.johnstraub1954.game_of_life.components.URLPanel;
 
 public class ShowPanel
 {
     private static final Component  panelToShow = 
-        new PatternPropertiesPanel( new ActionRegistrar() );
+        //new PatternPropertiesPanel( new ActionRegistrar() );
+        //new GridPropertiesPanel( new ActionRegistrar() );
+//        new ControlsPanel();
+//        new GeneratorPanel();
+        new URLPanel();
     
     public static void main(String[] args)
     {

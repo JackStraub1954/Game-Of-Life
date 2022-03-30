@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 
+import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.GOLTimer;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
@@ -33,9 +34,15 @@ import com.gmail.johnstraub1954.game_of_life.main.Utils;
  * </ol>
  * 
  * Also in charge of managing timer tasks when animation is enabled.
+ * <br>
+ * 
+ * <img
+ *      style="margin: 2em;"
+ *      src="doc-files/GeneratorPanel.png"
+ *      alt="GeneratorPanel.png"
+ * >
  * 
  * @author Jack Straub
- *
  */
 public class GeneratorPanel extends JPanel
 {
@@ -58,7 +65,7 @@ public class GeneratorPanel extends JPanel
     private TimerTask       task                = null;
     
     /**
-     * Constructor
+     * Constructor.
      */
     public GeneratorPanel()
     {
@@ -70,14 +77,17 @@ public class GeneratorPanel extends JPanel
         
         nextGenButton.setAlignmentX( Component.CENTER_ALIGNMENT );
         nextGenButton.addActionListener( e -> Utils.INSTANCE.propagate() );
+        nextGenButton.setName( GOLConstants.GEN_NEXT_BUTTON_CN );
         add( nextGenButton );
-        
+        add( new HSeparator( 3, true ) );
+
         rewindButton.setAlignmentX( Component.CENTER_ALIGNMENT );
         rewindButton.addActionListener( e -> rewind() );
         boolean rewindButtonStatus  = params.getGridLatestData() != null;
         params.addPropertyChangeListener( e -> tweakRewind( e ) );
 
         rewindButton.setEnabled( rewindButtonStatus );
+        rewindButton.setName( GOLConstants.GEN_REWIND_BUTTON_CN );
         add( rewindButton );
         
         // a bit more space between the next-gen button and the 
@@ -90,9 +100,11 @@ public class GeneratorPanel extends JPanel
         sliderFeedback.setMaximumSize( sliderFeedback.getPreferredSize() );
 
         sliderFeedback.setBorder( null );
+        sliderFeedback.setName( GOLConstants.GEN_FEEDBACK_COMP_CN );
         add( sliderFeedback );
         
         slider.setAlignmentX( Component.CENTER_ALIGNMENT );
+        slider.setName( GOLConstants.GEN_ANIMATE_TOGGLE_CN );
         add( slider );
 
         // a bit more space between the slider and the 
@@ -157,9 +169,6 @@ public class GeneratorPanel extends JPanel
         return slider;
     }
     
-    /**
-     * @param evt
-     */
     private void adjustFeedback( ChangeEvent evt )
     {
         Object  src = evt.getSource();

@@ -189,14 +189,14 @@ public class Grid extends JPanel implements PropertyChangeListener
             int     width   = getWidth();
             int     height  = getHeight();
             
-            float   ulcX    = 0;//gridMarginLeft;
-            float   ulcY    = 0;//gridMarginTop;
+            float   ulcX    = 0;
+            float   ulcY    = 0;
             ulCorner = new Point2D.Float( ulcX, ulcY );
             
             float   lrcX    = 
-                ulcX + width;// - gridMarginRight - gridMarginLeft;
+                ulcX + width;
             float   lrcY    =
-                ulcY + height;// - gridMarginBottom - gridMarginTop;
+                ulcY + height;
             
             lrCorner = new Point2D.Float( lrcX, lrcY );
             nextStart = new Point2D.Float( ulCorner.x, ulCorner.y );

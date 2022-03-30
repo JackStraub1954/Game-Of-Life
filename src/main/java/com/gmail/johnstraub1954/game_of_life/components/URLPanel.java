@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 
@@ -59,6 +60,7 @@ public class URLPanel extends JPanel
         dragAndDropPanel.setLayout( 
             new BoxLayout( dragAndDropPanel, BoxLayout.X_AXIS ) );
         urlTextBox.setAlignmentX( Component.LEFT_ALIGNMENT );
+        urlTextBox.setName( GOLConstants.URL_TEXT_FIELD_CN );
         
         // In a BoxLayout, a text component will expand to fill
         // available space. Try to prevent that from happening.
@@ -67,6 +69,7 @@ public class URLPanel extends JPanel
         dragAndDropPanel.add( urlTextBox );
         openURLButton.setAlignmentX(Component.RIGHT_ALIGNMENT );
         openURLButton.addActionListener( e -> urlManager.open() );
+        openURLButton.setName( GOLConstants.URL_OPEN_BUTTON_CN );
         dragAndDropPanel.add( openURLButton );
         add( dragAndDropPanel );
         
@@ -76,6 +79,7 @@ public class URLPanel extends JPanel
 
         selectFileButton.setAlignmentX( Component.CENTER_ALIGNMENT );
         selectFileButton.addActionListener( e-> selectFile() );
+        selectFileButton.setName( GOLConstants.URL_SELECT_FILE_BUTTON_CN );
         add( selectFileButton );
     }
     
