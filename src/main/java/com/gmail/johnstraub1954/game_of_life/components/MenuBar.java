@@ -3,6 +3,7 @@ package com.gmail.johnstraub1954.game_of_life.components;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -12,6 +13,9 @@ public class MenuBar extends JMenuBar
 {
     private final PreferencesDialog preferencesDialog   = 
         new PreferencesDialog();
+    
+    private final SaveDialog        saveDialog          = new SaveDialog();
+    private final JFileChooser      fileChooser         = new JFileChooser();
     
     private final JMenu fileMenu;
     private final JMenu windowMenu;
@@ -42,6 +46,7 @@ public class MenuBar extends JMenuBar
         JMenuItem   saveAsItem  = new JMenuItem( "Save As", KeyEvent.VK_A );
         keyStroke = KeyStroke.getKeyStroke( KeyEvent.VK_A, ctrlMask );
         saveAsItem.setAccelerator( keyStroke );
+        saveAsItem.addActionListener( e -> saveDialog.setVisible( true ) );
         fileMenu.add( saveAsItem );
 
         add( fileMenu );
@@ -56,5 +61,14 @@ public class MenuBar extends JMenuBar
             e -> preferencesDialog.setVisible( true ) );
         windowMenu.add( preferencesItem );
         add( windowMenu );
+    }
+    
+    private void saveAs()
+    {
+        int result  = fileChooser.showSaveDialog( null );
+        if ( result == JFileChooser.APPROVE_OPTION )
+        {
+            
+        }
     }
 }

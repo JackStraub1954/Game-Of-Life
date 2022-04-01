@@ -78,11 +78,11 @@ class PatternPropertiesPanelTest
         showDialog();
         
         applyButton = 
-            ComponentUtils.getJButton( GOLConstants.PREF_APPLY_BUTTON_CN );
+            ComponentUtils.getJButton( GOLConstants.BP_APPLY_BUTTON_CN );
         cancelButton = 
-            ComponentUtils.getJButton( GOLConstants.PREF_CANCEL_BUTTON_CN );
+            ComponentUtils.getJButton( GOLConstants.BP_CANCEL_BUTTON_CN );
         okButton = 
-            ComponentUtils.getJButton( GOLConstants.PREF_OK_BUTTON_CN );
+            ComponentUtils.getJButton( GOLConstants.BP_OK_BUTTON_CN );
     
         patternNameTextBox =
             ComponentUtils.getJTextField( GOLConstants.PREF_PATTERN_NAME_CN );

@@ -82,9 +82,9 @@ public class RLEDescriptor implements Iterable<Character>
     
     /**
      * Constructor.
-     * Initializes state (as much as possible) from a given RLEInput object.
+     * Initializes state (as much as possible) from a given Parameters object.
      * 
-     * @param rleData   the given RLEInputObject
+     * @param params   the given Parameters object
      */
     public RLEDescriptor( Parameters params )
     {

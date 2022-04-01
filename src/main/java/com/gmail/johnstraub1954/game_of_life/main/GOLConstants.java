@@ -305,13 +305,23 @@ public class GOLConstants
     // grid, or the dialog that is used to set property names.
     // These are pretty exclusively for testing.
     //
+    // TODO reorganize the names of the pattern properties and 
+    //      grid properties panel components
+    //
     ////////////////////////////////////////
+    
+    ////////////////////////////////
+    // save-as dialog
+    ////////////////////////////////    
+    /** The name of the dialog that creates new pattern files */
+    public static final String  SAVE_DLG_CN         = "saveDialog";
     
     ////////////////////////////////
     // preferences dialog
     ////////////////////////////////    
     /** The name of the dialog that manages preferences */
     public static final String  PREF_DLG_CN         = "preferencesDialog";
+    
     /** The name of the component that initiates setting the grid color */
     public static final String  PREF_GRID_COLOR_CN  = 
        PREF_DLG_CN + ".gridColorComp";
@@ -362,15 +372,21 @@ public class GOLConstants
     /** The name of the component that contains the survival rules */
     public static final String PREF_SURVIVAL_RULES_CN  = 
        PREF_DLG_CN + ".survivalRules";
-    /** The name of the preferences dialog apply; button */
-    public static final String PREF_APPLY_BUTTON_CN   = 
-       PREF_DLG_CN + ".applyButton";
+    
+    ////////////////////////////////
+    // button panel
+    ////////////////////////////////
+    /** The name of the button panel */
+    public static final String BUTT_PANEL_CN            = "buttonPanel";
+        /** The name of the preferences dialog apply; button */
+    public static final String BP_APPLY_BUTTON_CN     = 
+        BUTT_PANEL_CN + ".applyButton";
     /** The name of the preferences dialog cancel; button */
-    public static final String PREF_CANCEL_BUTTON_CN   = 
-       PREF_DLG_CN + ".cancelButton";
+    public static final String BP_CANCEL_BUTTON_CN    = 
+        BUTT_PANEL_CN + ".cancelButton";
     /** The name of the preferences dialog OK button */
-    public static final String PREF_OK_BUTTON_CN       = 
-        PREF_DLG_CN + ".okButton";
+    public static final String BP_OK_BUTTON_CN        = 
+        BUTT_PANEL_CN + ".okButton";
     
     ////////////////////////////////
     // main frame panels
