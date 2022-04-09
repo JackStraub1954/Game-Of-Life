@@ -15,6 +15,8 @@ import com.gmail.johnstraub1954.game_of_life.components.GridFrame;
  */
 public class Main
 {
+    private static final Parameters params  = Parameters.INSTANCE;
+    
     /**
      * Boots the Game of Life GUI.
      * 
@@ -24,7 +26,7 @@ public class Main
     {
         GridFrame   frame   = new GridFrame();
         SwingUtilities.invokeLater( () -> frame.run() );
-        Parameters.INSTANCE.addNotificationListener( 
+        params.addNotificationListener( 
             GRID_CELL_CLICKED_PN, 
             e -> {
                 Cell cell = (Cell)e.getSource();
@@ -33,5 +35,18 @@ public class Main
                 Parameters.INSTANCE.getGridMap().put( cell );
                 Parameters.INSTANCE.reset();
             });
+        
+        try
+        {
+            Thread.sleep( 1000 );
+        }
+        catch ( InterruptedException exc )
+        {
+            
+        }
+        System.out.println( "latest = " + params.getGridLatestData() );
+        System.out.println( "gridMap = " + params.getGridMap() );
+        System.out.println( "url = " + params.getGridURL() );
+        System.out.println( "file = " + params.getPatternFileName() );
     }
 }

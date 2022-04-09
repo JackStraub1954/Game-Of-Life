@@ -73,11 +73,14 @@ public class RLEDescriptor implements Iterable<Character>
      */
     public RLEDescriptor( RLEInput rleData )
     {
-        birthRules.addAll( rleData.getBirthRules() );
-        survivalRules.addAll( rleData.getSurvivalRules() );
-        name = rleData.getName();
-        authorName = rleData.getAuthor();
-        upperLeftCorner = rleData.getUpperLeft();
+        if ( rleData != null )
+        {
+            birthRules.addAll( rleData.getBirthRules() );
+            survivalRules.addAll( rleData.getSurvivalRules() );
+            name = rleData.getName();
+            authorName = rleData.getAuthor();
+            upperLeftCorner = rleData.getUpperLeft();
+        }
     }
     
     /**

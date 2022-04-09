@@ -51,7 +51,11 @@ import java.util.List;
  */
 public enum Parameters
 {
+    /** Singleton instance of this class */
     INSTANCE;
+
+    /** Object to manage property initialization */
+    private final GOLProperties props   = new GOLProperties();
     
     /** Automatic regeneration on/off */
     private boolean             autoRegenerationOn;
@@ -91,16 +95,16 @@ public enum Parameters
     /** Grid cell color (for live cells) */
     private Color               gridCellColor;
     /** 
-     * The coordinates of the cell to place in the upper-left corner
-     * of the physical grid.
-     */
-    private Point               gridCellOrigin;
-    /** 
      * Indicates whether the application should try to center the grid
      * with each new generation.
      */
     private boolean             gridKeepCentered;
 
+    /** 
+     * The coordinates of the cell to place in the upper-left corner
+     * of the physical grid.
+     */
+    private Point               gridCellOrigin;
     /** 
      * Grid map
      */
@@ -154,7 +158,6 @@ public enum Parameters
      */
     private Parameters()
     {
-        GOLProperties   props   = new GOLProperties();
         autoRegenerationOn = props.getAutoRegenOn();
         autoRegenerationPace = props.getAutoRegenPace();
         autoRegenerationPaceMin = props.getAutoRegenPaceMin();
@@ -172,11 +175,23 @@ public enum Parameters
         gridLineColor = props.getGridLineColor();
         gridCellSize = props.getGridCellSize();
         gridCellColor = props.getGridCellColor();
-        gridCellOrigin = props.getGridCellOrigin();
         gridKeepCentered = props.getGridKeepCentered();
+        
+        initPatternParameters();
+    }
+    
+    /**
+     * Initialize parameters that are directly correlated with patters.
+     * Examples are survival rules, birth rule and pattern name.
+     * These parameters have to be reset each time
+     * a new pattern is initiated.
+     */
+    public void initPatternParameters()
+    {
+        gridCellOrigin = props.getGridCellOrigin();
         gridURL = props.getGridURL();
         gridLatestData = props.getGridLatestData();
-        
+
         survivalStates = props.getSurvivalStates();
         birthStates = props.getBirthStates();        
         patternName = props.getPatternName();
@@ -185,7 +200,7 @@ public enum Parameters
         authorEmail = props.getAuthorEmail();
         authorTime = props.getAuthorTime();
         
-        gridMap = null;
+        setGridMap( new GridMap() );
     }
     
     /**
