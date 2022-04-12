@@ -238,6 +238,10 @@ public class GOLConstants
     public static final String  CTRL_GRID_LATEST_PN     = "gridLatestData";
     /** Most recent input used to populate grid default value */
     public static final String  CTRL_GRID_LATEST_DV     = "";
+    /** The checkpoint stack */
+    public static final String  CTRL_CP_STACK_PN        = "gridLatestData";
+    /** The checkpoint stack default value */
+    public static final String  CTRL_CP_STACK_DV        = "";
     
 
     ////////////////////////////////////////
@@ -263,6 +267,10 @@ public class GOLConstants
     public static final String  ACTION_OKAY_PN          = "okay";
     /** Property associated with opening a dialog */
     public static final String  ACTION_OPENED_PN        = "opened";
+    /** Property associated with pushing a checkpoint */
+    public static final String  ACTION_PUSH_CP_PN       = "pushCP";
+    /** Property associated with popping a checkpoint */
+    public static final String  ACTION_POP_CP_PN        = "popCP";
 
     ////////////////////////////////////////
     //
@@ -434,6 +442,12 @@ public class GOLConstants
     /** The name of the center-grid component */
     public static final String  CTRL_CENTER_COMP_CN     =
         MAIN_FRAME_CN + ".centerGridButton";
+    /** The name of the "push checkpoint" control */
+    public static final String  CTRL_PUSH_CP_CN   =
+        MAIN_FRAME_CN + ".genPushCP";
+    /** The name of the "pop checkpoint" control */
+    public static final String  CTRL_POP_CP_CN   =
+        MAIN_FRAME_CN + ".genPushCP";
 
     ////////////////////////////////
     // URL panel

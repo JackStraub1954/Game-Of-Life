@@ -1,7 +1,10 @@
 package com.gmail.johnstraub1954.game_of_life.components;
 
 import java.awt.Component;
+import java.util.EmptyStackException;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -10,9 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 
+import com.gmail.johnstraub1954.game_of_life.main.CheckpointStack;
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
+import com.gmail.johnstraub1954.game_of_life.main.GridMap;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 public class ControlsPanel extends JPanel
@@ -96,6 +102,10 @@ public class ControlsPanel extends JPanel
         centerGridButton.addActionListener( e -> params.centerGrid() );
         centerGridButton.setName( GOLConstants.CTRL_CENTER_COMP_CN );
         add( centerGridButton );
+        
+        CheckpointPanel cpPanel = new CheckpointPanel();
+//        cpPanel.setAlignmentX( Component.CENTER_ALIGNMENT );
+        add( cpPanel );
     }
     
     /**
@@ -153,5 +163,73 @@ public class ControlsPanel extends JPanel
         JToggleButton   button  = (JToggleButton)src;
         params.setGridKeepCentered( button.isSelected() );
         params.reset();
+    }
+    
+    /**
+     * Encapsulates a panel containing two buttons,
+     * for pushing a popping a checkpoint.
+     * 
+     * @author Jack Straub
+     */
+    private class CheckpointPanel extends JPanel
+    {
+        /** Generated serial version UID */
+        private static final long serialVersionUID = 7138956201507642938L;
+
+        public CheckpointPanel()
+        {
+            setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
+            
+            Border  titledBorder    =
+                BorderFactory.createTitledBorder( "Checkpoint" );
+            Border  emptyBorder     =
+                BorderFactory.createEmptyBorder( 5, 5, 5, 5 );
+            Border  border          =
+                BorderFactory
+                    .createCompoundBorder( titledBorder, emptyBorder );
+            
+            setBorder( border );
+            
+            JButton push    = new JButton( "Push" );
+            push.setName( GOLConstants.CTRL_PUSH_CP_CN );
+            push.setAlignmentX( Component.LEFT_ALIGNMENT );
+            push.addActionListener( e -> push() );
+            add( push );
+            
+            add( Box.createHorizontalStrut( 10 ) );
+            
+            JButton pop     = new JButton( "Pop" );
+            pop.setName( GOLConstants.CTRL_POP_CP_CN );
+            pop.setAlignmentX( Component.RIGHT_ALIGNMENT );
+            pop.addActionListener( e -> pop() );
+            add( pop );
+        }
+        
+        /**
+         * Pushes the current grid map onto the checkpoint stack.
+         * Generates a "checkpoint pushed" notification.
+         */
+        private void push()
+        {
+            GridMap gridMap = params.getGridMap();
+            CheckpointStack.INSTANCE.push( gridMap );
+            params.checkpointPushed();
+        }
+        
+        /**
+         * Pops the grid map from the top of the checkpoint stack,
+         * and installs it as the current grid map.
+         * Generates a "checkpoint popped" notification
+         * followed by a "reset" notification.
+         * 
+         * @throws EmptyStackException  if the stack is empty
+         */
+        private void pop() throws EmptyStackException
+        {
+            GridMap gridMap = CheckpointStack.INSTANCE.pop();
+            params.setGridMap( gridMap );
+            params.checkpointPopped();
+            params.reset();
+        }
     }
 }

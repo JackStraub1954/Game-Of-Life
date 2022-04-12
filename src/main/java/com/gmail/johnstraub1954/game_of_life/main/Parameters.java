@@ -36,6 +36,7 @@ import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * This class provides a single point of access to parameters
@@ -112,6 +113,9 @@ public enum Parameters
     
     /** The location (URL) of the date to parse and display in the grid. */
     private URL                 gridURL;
+    
+    /** The checkpoint stack */
+    private Stack<GridMap>      checkpointStack;
     
     /** 
      * Conditions under which a live cell may continue to live.
@@ -1063,6 +1067,26 @@ public enum Parameters
     public void reset()
     {
         fireNotificationEvent( GOLConstants.ACTION_RESET_PN );
+    }
+    
+    /**
+     * Fires a NotificationEvent to NotificationListeners.
+     * The event's property name will
+     * be set to GOLConstants.ACTION_PUSH_CP_PN. 
+     */
+    public void checkpointPushed()
+    {
+        fireNotificationEvent( GOLConstants.ACTION_PUSH_CP_PN );
+    }
+    
+    /**
+     * Fires a NotificationEvent to NotificationListeners.
+     * The event's property name will
+     * be set to GOLConstants.ACTION_POP_CP_PN. 
+     */
+    public void checkpointPopped()
+    {
+        fireNotificationEvent( GOLConstants.ACTION_POP_CP_PN );
     }
     
     /**

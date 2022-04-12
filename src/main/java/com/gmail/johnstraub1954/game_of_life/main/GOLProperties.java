@@ -302,6 +302,8 @@ public class GOLProperties extends Properties
         return keepCentered;
     }
     
+//    public Stack<GridMap> get
+    
     /**
      * Gets the list of states that determines whether
      * a live cell survives into the next generation.
