@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -48,13 +49,28 @@ public class GridMap implements Iterable<Cell>
      * returns a live cell; an unsuccessful <em>get</em> operation
      * represents a dead cell.
      */
-    private final Map<Point,Boolean>    grid    = new HashMap<>();
+    private final Map<Point,Boolean>    grid;
     
     /** 
      * Changed to true every time the map is modified.
      * Used to indicate when a grid needs to be saved.
      */
     private boolean modified        = false;
+    
+    /**
+     * Default constructor.
+     */
+    public GridMap()
+    {
+        grid = new HashMap<>();
+    }
+    
+    public GridMap( GridMap copyFrom )
+    {
+        grid = new HashMap<>();
+        grid.putAll( copyFrom.grid );
+        modified = copyFrom.modified;
+    }
     
     /**
      * Returns the cell corresponding to a given coordinate pair.
@@ -259,6 +275,51 @@ public class GridMap implements Iterable<Cell>
         Rectangle   rect    = getLiveRectangle();
         Point       ulc     = new Point( rect.x, rect.y );
         return ulc;
+    }
+    
+    /**
+     * Computes a hashcode for this object.
+     * Required because equals is overridden.
+     * 
+     * @return  a hashcode for this object
+     */
+    @Override
+    public int hashCode()
+    {
+        int hash    = Objects.hash( grid, modified );
+        return hash;
+    }
+    
+    /**
+     * Determines if this GridMap is equals to
+     * a given object.
+     * The result is true if the given object
+     * is a GridMap,
+     * and all of its members are equal to
+     * the corresponding members of this GridMap.
+     * 
+     * @param   the given object
+     * 
+     * @return true if this GridMap is equal to the given object
+     */
+    @Override
+    public boolean equals( Object obj )
+    {
+        boolean result  = false;
+        if ( obj == null )
+            result = false;
+        else if ( this == obj )
+            result = true;
+        else if ( !(obj instanceof GridMap) )
+            result = false;
+        else
+        {
+            GridMap that    = (GridMap)obj;
+            result = 
+                this.grid.equals( that.grid )
+                && this.modified == that.modified;
+        }
+        return result;
     }
 
     /**

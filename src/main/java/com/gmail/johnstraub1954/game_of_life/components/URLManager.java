@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.text.JTextComponent;
 
 import com.gmail.johnstraub1954.game_of_life.main.Cell;
+import com.gmail.johnstraub1954.game_of_life.main.CheckpointStack;
 import com.gmail.johnstraub1954.game_of_life.main.GOLException;
 import com.gmail.johnstraub1954.game_of_life.main.GridMap;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
@@ -203,6 +204,8 @@ public class URLManager extends DropTargetAdapter
      */
     public static void open( RLEInput input )
     {
+        CheckpointStack cpStack     = CheckpointStack.INSTANCE;
+
         params.setGridCellOrigin( input.getUpperLeft() );
         params.setSurvivalStates( input.getSurvivalRules() );
         params.setBirthStates( input.getBirthRules() );
@@ -211,6 +214,9 @@ public class URLManager extends DropTargetAdapter
         map.resetModified();
         params.setGridMap( map );
         params.setGridLatestData( input );
+        
+        cpStack.clear();
+        cpStack.push( map );
         params.reset();
     }
     

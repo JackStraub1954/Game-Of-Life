@@ -16,8 +16,10 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 
+import com.gmail.johnstraub1954.game_of_life.main.CheckpointStack;
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.GOLTimer;
+import com.gmail.johnstraub1954.game_of_life.main.GridMap;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 import com.gmail.johnstraub1954.game_of_life.main.Utils;
@@ -200,6 +202,10 @@ public class GeneratorPanel extends JPanel
      */
     private void rewind()
     {
+        GridMap map = CheckpointStack.INSTANCE.rewind();
+        params.setGridMap( map );
+        params.reset();
+        
         RLEInput    input   = params.getGridLatestData();
         if ( input != null )
             URLManager.open( input );

@@ -29,7 +29,8 @@ public enum CheckpointStack
      */
     public GridMap push( GridMap gridMap )
     {
-        stack.push( gridMap );
+        GridMap newMap  = new GridMap( gridMap );
+        stack.push( newMap );
         return gridMap;
     }
     
@@ -101,5 +102,35 @@ public enum CheckpointStack
     public boolean empty()
     {
         return isEmpty();
+    }
+    
+    /**
+     * Resets the stack to its initial state
+     * (which contains a single item on the stack).
+     * Returns the single item on the stack.
+     * The stack is left containing a single item.
+     * If the stack is empty,
+     * a new, empty, GridMap is created,
+     * pushed onto the stack,
+     * and returned to the caller.
+     * 
+     * @return the first item on the stack,
+     *         or a new GridMap if the stack is empty
+     */
+    public GridMap rewind()
+    {
+        GridMap result  = null;
+        if ( !isEmpty() )
+        {
+            result = stack.get( 0 );
+            stack.clear();
+            stack.push( result );
+        }
+        else
+        {
+            result = new GridMap();
+            stack.push( result );
+        }
+        return result;
     }
 }
