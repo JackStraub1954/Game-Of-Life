@@ -119,7 +119,7 @@ public class MenuBar extends JMenuBar
     private void openPattern()
     {
         int openStatus  = JOptionPane.OK_OPTION;
-        if ( params.getGridMap().isModified() )
+        if ( params.getModifiedPatternData() )
         {
             openStatus = doYouWantToSave();
             if ( openStatus == JOptionPane.OK_OPTION )
@@ -140,7 +140,7 @@ public class MenuBar extends JMenuBar
     private void newPattern()
     {
         int newStatus   = JOptionPane.OK_OPTION;
-        if ( params.getGridMap().isModified() )
+        if ( params.getModifiedPatternData() )
         {
             newStatus = doYouWantToSave();
             if ( newStatus == JOptionPane.OK_OPTION )
@@ -150,7 +150,6 @@ public class MenuBar extends JMenuBar
         if ( newStatus != JOptionPane.CANCEL_OPTION )
         {
             params.initPatternParameters();
-            params.getGridMap().resetModified();
             params.reset();
         }
     }

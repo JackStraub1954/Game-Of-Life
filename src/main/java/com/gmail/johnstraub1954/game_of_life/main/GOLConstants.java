@@ -271,6 +271,8 @@ public class GOLConstants
     public static final String  ACTION_PUSH_CP_PN       = "pushCP";
     /** Property associated with popping a checkpoint */
     public static final String  ACTION_POP_CP_PN        = "popCP";
+    /** Property associated with saving a pattern file */
+    public static final String  ACTION_FILE_SAVED_PN    = "fileSaved";
 
     ////////////////////////////////////////
     //
@@ -304,6 +306,51 @@ public class GOLConstants
     public static final String  MISC_AUTHOR_TIME_PN         = "authorTime";
     /** Author creation date default value. */
     public static final String  MISC_AUTHOR_TIME_DV         = "";
+    
+    ////////////////////////////////////////
+    //
+    // MODIFICATION FLAGS
+    //
+    //  Boolean flags that indicate whether state has been changed,
+    //  and may need to be saved.
+    //
+    ////////////////////////////////////////
+    
+    /** 
+     * The state of the grid defining the pattern has been modified;
+     * may be true or false
+     */
+    public static final String  MODIFIED_GRID_PN            = 
+        "modifiedGridState";
+    /** Grid modification state default value. */
+    public static final String  MODIFIED_GRID_DV            = "false";
+    /** 
+     * The state of the pattern has meta-data been modified;
+     * metadata includes author name, pattern name and rules.
+     * May be true of false.
+     */
+    public static final String  MODIFIED_METADATA_PN        = 
+        "modifiedMetaDataState";
+    /** Metadata modification state default value. */
+    public static final String  MODIFIED_METADATA_DV        = "false";
+    /** 
+     * The state of the pattern data has been modified;
+     * this is defined as the inclusive-or of the MODIFIED_GRID
+     * and MODIFIED_META_DATA flags.
+     * This is a read-only property.
+     * May be true of false.
+     */
+    public static final String  MODIFIED_PATTERN_DATA_PN    = 
+        "modifiedPatternData";
+    /** 
+     * The state of the GUI controls has been been modified;
+     * this includes cell color, cell size, cell line color, etc.
+     * May be true of false.
+     */
+    public static final String  MODIFIED_GUI_PN             = 
+        "modifiedGridState";
+    /** Grid modification state default value. */
+    public static final String  MODIFIED_GUI_DV             = "false";
     
 
     ////////////////////////////////////////

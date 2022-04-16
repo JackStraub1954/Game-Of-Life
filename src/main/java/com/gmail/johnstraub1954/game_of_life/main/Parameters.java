@@ -28,6 +28,9 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHO
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_NAME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_GRID_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_METADATA_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_PATTERN_DATA_PN;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -36,7 +39,7 @@ import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Stack;
+import java.util.function.Consumer;
 
 /**
  * This class provides a single point of access to parameters
@@ -114,9 +117,6 @@ public enum Parameters
     /** The location (URL) of the date to parse and display in the grid. */
     private URL                 gridURL;
     
-    /** The checkpoint stack */
-    private Stack<GridMap>      checkpointStack;
-    
     /** 
      * Conditions under which a live cell may continue to live.
      */
@@ -141,6 +141,23 @@ public enum Parameters
      * of the documentation header
      */
     private LocalDateTime       authorTime;
+    
+    /** 
+     * Set if the grid has been modified 
+     * since the last save-file operation 
+     */
+    private boolean             modifiedGrid;
+    /** Set if the pattern metadata has been modified 
+     * since the last save-file operation 
+     */
+    private boolean             modifiedMetadata;
+    /** 
+     * Inclusive-or of the modifiedGrid and modifiedMetadata properties.
+     * From the user's perspective,
+     * this is a read-only property,
+     * so its setter is private. 
+     */
+    private boolean             modifiedPatternData;
     
     /** Support for PropertyChangeListeners */
     private final PropertyChangeSupport propChangeSupport   = 
@@ -182,6 +199,38 @@ public enum Parameters
         gridKeepCentered = props.getGridKeepCentered();
         
         initPatternParameters();
+        addPropertyChangeListener( 
+            GOLConstants.ACTION_FILE_SAVED_PN,
+            e -> setModifiedGrid( false ) 
+        );
+        addPropertyChangeListener( 
+            GOLConstants.ACTION_FILE_SAVED_PN,
+            e -> setModifiedMetadata( false ) 
+        );
+    }
+    
+    private void linkProperties()
+    {
+        class Linker
+        { 
+            public final String property; 
+            public final Consumer<Boolean> consumer;
+            public Linker( String property, Consumer<Boolean> consumer )
+            {
+                this.property = property;
+                this.consumer = consumer;
+            }
+        }
+        Consumer<Boolean>   gridModifier        = 
+            e -> setModifiedGrid( true );
+        Consumer<Boolean>   metadataModifier    = 
+            e -> setModifiedMetadata( true );
+            
+        Linker[]    linkage =
+        {
+            new Linker( CTRL_BIRTH_STATES_PN, metadataModifier ),
+        };
+        // TODO change to switch statement
     }
     
     /**
@@ -1044,6 +1093,110 @@ public enum Parameters
         Object  newValue    = authorTime;
         String  propName    = MISC_AUTHOR_TIME_PN;
         this.authorTime = authorTime;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+    }
+
+    /**
+     * Gets the value of the modified-grid property.
+     * 
+     * @return  true if the grid has been modified since the last
+     *          save-file operation
+     */
+    public boolean getModifiedGrid()
+    {
+        return modifiedGrid;
+    }
+    
+    /**
+     * Sets the modified-grid flag.
+     * This method propagates PropertyChange events
+     * for properties GOLConstants.MODIFIED_GRID_PN
+     * and GOLConstants.MODIFIED_PATTERN_DATA_PN.
+     *
+     * @param   modifiedGrid 
+     *              true to indicate that
+     *              the grid has been modified 
+     *              since the last save operation
+     *              
+     * @see #setModifiedPatternData(boolean)
+     */
+    public void setModifiedGrid( boolean modifiedGrid )
+    {
+        boolean oldValue    = this.modifiedGrid;
+        boolean newValue    = modifiedGrid;
+        String  propName    = MODIFIED_GRID_PN;
+        this.modifiedGrid = modifiedGrid;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+        setModifiedPatternData( modifiedGrid | modifiedMetadata );
+    }
+
+    /**
+     * Gets the value of the modified-metadata property.
+     * 
+     * @return  true if the grid has been modified since the last
+     *          save-file operation
+     */
+    public boolean getModifiedMetadata()
+    {
+        return modifiedMetadata;
+    }
+    
+    /**
+     * Sets the modified-metadata flag.
+     * This method propagates PropertyChange events
+     * for properties GOLConstants.MODIFIED_METADATA_PN
+     * and GOLConstants.MODIFIED_PATTERN_DATA_PN.
+     *
+     * @param   modifiedMetadata 
+     *              true to indicate that
+     *              the pattern metadata has been modified 
+     *              since the last save operation
+     *              
+     * @see #setModifiedPatternData(boolean)
+     */
+    public void setModifiedMetadata( boolean modifiedMetadata )
+    {
+        boolean oldValue    = this.modifiedMetadata;
+        boolean newValue    = modifiedMetadata;
+        String  propName    = MODIFIED_METADATA_PN;
+        this.modifiedMetadata = modifiedMetadata;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+        setModifiedPatternData( modifiedGrid | modifiedMetadata );
+    }
+
+    /**
+     * Gets the value of the modified-pattern data property.
+     * 
+     * @return  true if the grid or the pattern metadata 
+     *          has been modified since the last
+     *          save-file operation
+     */
+    public boolean getModifiedPatternData()
+    {
+        return modifiedPatternData;
+    }
+    
+    /**
+     * Sets the modified-pattern data flag;
+     * private because it is not under the control
+     * of the user.
+     * This method propagates a PropertyChange event
+     * for MODIFIED_PATTERN_DATA_PN.
+     *
+     * @param   modifiedGrid 
+     *              true to indicate that
+     *              the grid has been modified 
+     *              since the last save operation
+     */
+    private void setModifiedPatternData( boolean modifiedPatternData )
+    {
+        boolean oldValue    = this.modifiedPatternData;
+        boolean newValue    = modifiedPatternData;
+        String  propName    = MODIFIED_PATTERN_DATA_PN;
+        this.modifiedPatternData = modifiedPatternData;
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
     }

@@ -211,7 +211,6 @@ public class URLManager extends DropTargetAdapter
         params.setBirthStates( input.getBirthRules() );
         
         GridMap map = getGridMap( input );
-        map.resetModified();
         params.setGridMap( map );
         params.setGridLatestData( input );
         

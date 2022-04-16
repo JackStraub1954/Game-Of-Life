@@ -69,7 +69,11 @@ public class GridMap implements Iterable<Cell>
     {
         grid = new HashMap<>();
         grid.putAll( copyFrom.grid );
-        modified = copyFrom.modified;
+        
+        // can't just copy the modified property from there to here;
+        // there's more bookkeeping to be done, so set the flag
+        // via the private setter.
+        setModified( copyFrom.modified );
     }
     
     /**
@@ -115,12 +119,6 @@ public class GridMap implements Iterable<Cell>
      */
     public Cell put( int xco, int yco, boolean isAlive )
     {
-//        Point   point   = new Point( xco, yco );
-//        Cell    cell    = get( point );
-//        if ( isAlive )
-//            grid.put( point, true );
-//        else
-//            grid.remove( point );
         Cell    cell    = put( new Point( xco, yco ), isAlive );
         return cell;
     }
@@ -155,8 +153,7 @@ public class GridMap implements Iterable<Cell>
             grid.remove( point );
         else
             grid.put( point, true );
-        modified = true;
-        
+        setModified( true );
         return cell;
     }
     
@@ -234,34 +231,6 @@ public class GridMap implements Iterable<Cell>
         Iterator<Cell>  iter    = new CellIterator( rect );
         return iter;
     }
-    
-    /**
-     * Resets the state of the grid to "unmodified."
-     * Two common uses for this method are:
-     * <ul>
-     * <li>Immediately after a fresh game has been loaded</li>
-     * <li>Immediately after saving the game</li>
-     * </ul>
-     * 
-     * @see #isModified()
-     */
-    public void resetModified()
-    {
-        modified = false;
-    }
-    
-    /**
-     * Gets a value that indicates whether the grid has been modified
-     * since the last reset.
-     * 
-     * @return  true if the grid has been modified since the last reset
-     * 
-     * @see #resetModified()
-     */
-    public boolean isModified()
-    {
-        return modified;
-    }
 
     /**
      * Returns the upper-left-corner of a rectangle that encloses
@@ -320,6 +289,19 @@ public class GridMap implements Iterable<Cell>
                 && this.modified == that.modified;
         }
         return result;
+    }
+    
+    /**
+     * Adjust the flag that says the grid has been modified
+     * since the last file-save operation.
+     * 
+     * @param isSet true if the grid has been modified
+     *              since the last file-save operation.
+     */
+    private void setModified( boolean isSet )
+    {
+        modified = isSet;
+        Parameters.INSTANCE.setModifiedGrid( isSet );
     }
 
     /**
