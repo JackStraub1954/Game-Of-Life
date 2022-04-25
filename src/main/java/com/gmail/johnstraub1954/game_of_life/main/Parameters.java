@@ -29,11 +29,13 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHO
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_AUTHOR_TIME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MISC_PATTERN_NAME_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_GRID_PN;
+import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_GUI_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_METADATA_PN;
 import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_PATTERN_DATA_PN;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URL;
@@ -141,6 +143,14 @@ public enum Parameters
      * of the documentation header
      */
     private LocalDateTime       authorTime;
+    
+    /** 
+     * Set if the GUI-control property,
+     * such as line color or cell width,
+     * has been modified 
+     * since the last save-file operation 
+     */
+    private boolean             modifiedGUI;
     
     /** 
      * Set if the grid has been modified 
@@ -1098,6 +1108,20 @@ public enum Parameters
     }
 
     /**
+     * Gets the value of the modified-GUI property.
+     * This value is true if one of the GUI control properties,
+     * e.g. cell color, line width, keep-centered
+     * has been changed.
+     * 
+     * @return  true if a GUI control property has been modified 
+     *          since the last save-file operation
+     */
+    public boolean getModifiedGUI()
+    {
+        return modifiedGrid;
+    }
+
+    /**
      * Gets the value of the modified-grid property.
      * 
      * @return  true if the grid has been modified since the last
@@ -1106,6 +1130,27 @@ public enum Parameters
     public boolean getModifiedGrid()
     {
         return modifiedGrid;
+    }
+    
+    /**
+     * Sets the modified-GUI flag.
+     * This method propagates a PropertyChange event
+     * for the GOLConstants.MODIFIED_GUI_PN property.
+     *
+     * @param   modifiedGUI 
+     *              true to indicate that
+     *              the grid has been modified 
+     *              since the last save operation
+     */
+    public void setModifiedGUI( boolean modifiedGUI )
+    {
+        boolean oldValue    = this.modifiedGUI;
+        boolean newValue    = modifiedGUI;
+        String  propName    = MODIFIED_GUI_PN;
+        this.modifiedGUI = modifiedGUI;
+        propChangeSupport.
+            firePropertyChange( propName, oldValue, newValue );
+        setModifiedPatternData( modifiedGUI | modifiedMetadata );
     }
     
     /**
@@ -1240,6 +1285,31 @@ public enum Parameters
     public void checkpointPopped()
     {
         fireNotificationEvent( GOLConstants.ACTION_POP_CP_PN );
+    }
+    
+    private void propertyLinker( PropertyChangeEvent pce )
+    {
+        String  prop    = pce.getPropertyName();
+        switch ( prop )
+        {
+        case GRID_COLOR_PN:
+        case GRID_MARGIN_TOP_PN:
+        case GRID_MARGIN_LEFT_PN:
+        case GRID_MARGIN_BOTTOM_PN:
+        case GRID_MARGIN_RIGHT_PN:
+        case GRID_WIDTH_PN:
+        case GRID_HEIGHT_PN:
+        case GRID_LINE_SHOW_PN:
+        case GRID_LINE_WIDTH_PN:
+        case GRID_LINE_COLOR_PN:
+        case GRID_CELL_SIZE_PN:
+        case GRID_CELL_COLOR_PN:
+        case GRID_CELL_ORIGIN_PN:
+        case GRID_KEEP_CENTERED_PN:
+        case GRID_MAP_PN:
+            this.setModifiedGUI( true );
+            break;
+        }
     }
     
     /**
