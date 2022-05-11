@@ -63,6 +63,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 /**
  * @author Jack Straub
@@ -302,7 +303,15 @@ public class GOLProperties extends Properties
         return keepCentered;
     }
     
-//    public Stack<GridMap> get
+    /**
+     * Get the default propagation procedure.
+     * 
+     * @return  the default propagation procedure
+     */
+    public Consumer<Object> getPropagateProc()
+    {
+        return o -> Utils.INSTANCE.conwayPropagate( o );
+    }
     
     /**
      * Gets the list of states that determines whether

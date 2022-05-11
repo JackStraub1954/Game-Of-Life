@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -78,7 +79,8 @@ public class GeneratorPanel extends JPanel
         this.setAlignmentX( Component.CENTER_ALIGNMENT );
         
         nextGenButton.setAlignmentX( Component.CENTER_ALIGNMENT );
-        nextGenButton.addActionListener( e -> Utils.INSTANCE.propagate() );
+        nextGenButton.addActionListener( e -> propagate() );
+//        nextGenButton.addActionListener( e -> Utils.INSTANCE.conwayPropagate( null ) );
         nextGenButton.setName( GOLConstants.GEN_NEXT_BUTTON_CN );
         add( nextGenButton );
         add( new HSeparator( 3, true ) );
@@ -119,6 +121,15 @@ public class GeneratorPanel extends JPanel
     }
     
     /**
+     * Execute the registered propagation procedure.
+     */
+    private void propagate()
+    {
+        Consumer<Object>    proc    = params.getPropagateProc();
+        proc.accept( null );
+    }
+    
+    /**
      * Catch ChangeEvents for the Animate toggle.
      * Trigger a change event for property GOLConstants.AUTO_REGEN_ON_PN.
      * 
@@ -150,7 +161,7 @@ public class GeneratorPanel extends JPanel
             long    interval    = 
                 (int)( 1 / genPerSec * millisPerSecond );
             task = golTimer
-                .addTask( interval, () -> Utils.INSTANCE.propagate() );
+                .addTask( interval, () -> propagate() );
         }
     }
     

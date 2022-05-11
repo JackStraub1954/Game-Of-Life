@@ -32,10 +32,14 @@ public enum Utils implements PropertyChangeListener
     }
     
     /**
-     * Calculate the next generation for this game pattern.
+     * Calculate the next generation for this game pattern
+     * using Conway's original algorithm (or minor variations,
+     * such as Highlife).
      * The grid map is updated, then Parameters.reset() is invoked.
+     * 
+     * @param   obj Object controlling propagation; not used
      */
-    public void propagate()
+    public void conwayPropagate( Object obj )
     {
         List<Cell>      cellsToModify   = new ArrayList<>();
         Iterator<Cell>  cellIterator    = gridMap.iterator();

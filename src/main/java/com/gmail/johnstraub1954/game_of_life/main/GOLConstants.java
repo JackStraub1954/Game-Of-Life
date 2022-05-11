@@ -177,6 +177,17 @@ public class GOLConstants
     
     ////////////////////////////////////////
     //
+    // PROPAGATION PROPERTIES
+    //
+    ////////////////////////////////////////
+    
+    /** Propagation procedure property name. */
+    public static final String  PROP_PROC_PN        = "spawn";
+    /** Propagation procedure default value (none). */
+    public static final String  PROP_PROC_DV        = "";
+    
+    ////////////////////////////////////////
+    //
     // AUTOREGENERATION PROPERTIES
     //
     ////////////////////////////////////////
@@ -265,14 +276,16 @@ public class GOLConstants
     public static final String  ACTION_CANCEL_PN        = "cancel";
     /** Property associated with firing an "OK" action.*/
     public static final String  ACTION_OKAY_PN          = "okay";
-    /** Property associated with opening a dialog */
+    /** Property associated with opening a dialog. */
     public static final String  ACTION_OPENED_PN        = "opened";
-    /** Property associated with pushing a checkpoint */
+    /** Property associated with pushing a checkpoint. */
     public static final String  ACTION_PUSH_CP_PN       = "pushCP";
-    /** Property associated with popping a checkpoint */
+    /** Property associated with popping a checkpoint. */
     public static final String  ACTION_POP_CP_PN        = "popCP";
-    /** Property associated with saving a pattern file */
+    /** Property associated with saving a pattern file. */
     public static final String  ACTION_FILE_SAVED_PN    = "fileSaved";
+    /** Property associated with spawning a new generation. */
+    public static final String  ACTION_PROPAGATE_PN     = "propagate";
 
     ////////////////////////////////////////
     //
@@ -460,7 +473,7 @@ public class GOLConstants
         MAIN_FRAME_CN + ".nextGenerationButton";
     /** The name of the rewind button */
     public static final String  GEN_REWIND_BUTTON_CN    =
-        MAIN_FRAME_CN + ".nextGenerationButton";
+        MAIN_FRAME_CN + ".rewindButton";
     /** 
      * The name of the component that displays feedback from the
      * "generations per second" control

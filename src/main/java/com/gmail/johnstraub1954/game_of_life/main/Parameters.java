@@ -168,6 +168,10 @@ public enum Parameters
      * so its setter is private. 
      */
     private boolean             modifiedPatternData;
+    /**
+     * Procedure to invoke when spawning a new generation.
+     */
+    private Consumer<Object>    propagateProc;
     
     /** Support for PropertyChangeListeners */
     private final PropertyChangeSupport propChangeSupport   = 
@@ -207,6 +211,8 @@ public enum Parameters
         gridCellSize = props.getGridCellSize();
         gridCellColor = props.getGridCellColor();
         gridKeepCentered = props.getGridKeepCentered();
+        
+        propagateProc = props.getPropagateProc();
         
         initPatternParameters();
         addPropertyChangeListener( 
@@ -1244,6 +1250,29 @@ public enum Parameters
         this.modifiedPatternData = modifiedPatternData;
         propChangeSupport.
             firePropertyChange( propName, oldValue, newValue );
+    }
+    
+    /**
+     * Get the procedure registered to spawn the next generation
+     * of a cellular automaton.
+     * 
+     * @return  the procedure registered to spawn the next generation
+     *          of a cellular automaton
+     */
+    public Consumer<Object> getPropagateProc()
+    {
+        return propagateProc;
+    }
+    
+    /**
+     * Registers the procedure to propagate the next generation
+     * of a cellular automaton.
+     * 
+     * @param proc  the procedure to register
+     */
+    public void setPropagateProc( Consumer<Object> proc )
+    {
+        propagateProc = proc;
     }
 
     /**
