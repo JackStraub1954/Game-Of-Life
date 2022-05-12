@@ -38,11 +38,8 @@ public enum GOLTimer
     /** Associated system scheduler */
     private final Timer timer   = new Timer( "Game of Life Timer" );
     
-    /** 
-     * Indicates whether the associated scheduler thread
-     *  has been terminated.
-     */
-    private boolean isDisposed  = false;
+    /** Indicates whether this timer has been disposed. */
+    private boolean     isDisposed  = false;
     
     /**
      * Schedules a task to be executed at millisecond intervals.
@@ -75,6 +72,14 @@ public enum GOLTimer
     {
         isDisposed = true;
         timer.cancel();
+    }
+    
+    /**
+     * Indicates whether this timer has been disposed.
+     */
+    public boolean isDisposed()
+    {
+        return isDisposed;
     }
     
     /**

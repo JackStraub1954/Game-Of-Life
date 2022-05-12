@@ -18,12 +18,14 @@ import com.gmail.johnstraub1954.game_of_life.main.RLEDescriptor;
 
 public class MenuBar extends JMenuBar
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = -1480572392683031783L;
+
     private final PreferencesDialog preferencesDialog   = 
         new PreferencesDialog();
     
     private final Parameters        params              = Parameters.INSTANCE;
     
-    private final SaveDialog        saveDialog          = new SaveDialog();
     private final JFileChooser      fileChooser         = new JFileChooser();
     
     private final JMenu fileMenu;

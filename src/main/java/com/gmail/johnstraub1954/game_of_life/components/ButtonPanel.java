@@ -19,6 +19,9 @@ import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
  */
 public class ButtonPanel extends JPanel
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = 1383961957502672211L;
+
     private final JButton   applyButton     = new JButton( "Apply" );
     private final JButton   cancelButton    = new JButton( "Cancel" );
     private final JButton   okayButton      = new JButton( "OK" );

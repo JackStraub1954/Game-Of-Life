@@ -8,11 +8,8 @@ import java.awt.GridBagLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.gmail.johnstraub1954.game_of_life.main.Parameters;
-
 public class GridFrame implements Runnable
 {
-    private final Parameters    params  = Parameters.INSTANCE;
     private final JFrame        frame;
 
     public GridFrame()
@@ -36,6 +33,9 @@ public class GridFrame implements Runnable
     
     private class Controls extends JPanel
     {
+        /** Generated serial version ID. */
+        private static final long serialVersionUID = -9042948552168026706L;
+
         private final float     separatorLength = .9f;
         public Controls()
         {

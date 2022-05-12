@@ -23,7 +23,6 @@ import com.gmail.johnstraub1954.game_of_life.main.GOLTimer;
 import com.gmail.johnstraub1954.game_of_life.main.GridMap;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
-import com.gmail.johnstraub1954.game_of_life.main.Utils;
 
 /**
  * Encapsulates the components used to control generation propagation:
@@ -49,6 +48,9 @@ import com.gmail.johnstraub1954.game_of_life.main.Utils;
  */
 public class GeneratorPanel extends JPanel
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = 3718902195871348226L;
+
     private static final float          sliderUnits     = 1000;
     private static final int            millisPerSecond = 1000;
     private static final DecimalFormat gpsFormatter     = 

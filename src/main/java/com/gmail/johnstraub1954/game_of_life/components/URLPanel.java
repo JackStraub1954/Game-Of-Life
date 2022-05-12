@@ -13,7 +13,6 @@ import javax.swing.JTextField;
 
 import com.gmail.johnstraub1954.game_of_life.main.GOLConstants;
 import com.gmail.johnstraub1954.game_of_life.main.Parameters;
-import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
 
 /**
  * Encapsulates control over the URL used to populate
@@ -26,6 +25,9 @@ import com.gmail.johnstraub1954.game_of_life.main.RLEInput;
  */
 public class URLPanel extends JPanel
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = -7703373313637269549L;
+
     private static final Parameters     params      = Parameters.INSTANCE;
     
     /** Identifier for the drag/drop text field */

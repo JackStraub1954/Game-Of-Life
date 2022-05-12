@@ -46,6 +46,9 @@ import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 public class Grid extends JPanel implements PropertyChangeListener
 {
     
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = -7456902757209921853L;
+
     private final   Parameters  params              = Parameters.INSTANCE;
     
     private GridMap         gridMap             = params.getGridMap(); 

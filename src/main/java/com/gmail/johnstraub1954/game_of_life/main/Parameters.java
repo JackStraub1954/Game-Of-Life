@@ -35,7 +35,6 @@ import static com.gmail.johnstraub1954.game_of_life.main.GOLConstants.MODIFIED_P
 
 import java.awt.Color;
 import java.awt.Point;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URL;
@@ -224,7 +223,10 @@ public enum Parameters
             e -> setModifiedMetadata( false ) 
         );
     }
-    
+
+    /*
+     * Proposed facility to link properties; when one property changes,
+     * another also changes/fires.
     private void linkProperties()
     {
         class Linker
@@ -248,6 +250,7 @@ public enum Parameters
         };
         // TODO change to switch statement
     }
+    */
     
     /**
      * Initialize parameters that are directly correlated with patters.
@@ -1316,6 +1319,9 @@ public enum Parameters
         fireNotificationEvent( GOLConstants.ACTION_POP_CP_PN );
     }
     
+    /*
+     * Proposed facility to link properties; when one property changes,
+     * another also changes/fires.
     private void propertyLinker( PropertyChangeEvent pce )
     {
         String  prop    = pce.getPropertyName();
@@ -1340,6 +1346,7 @@ public enum Parameters
             break;
         }
     }
+    */
     
     /**
      * Fires a NotificationEvent associated with a given property

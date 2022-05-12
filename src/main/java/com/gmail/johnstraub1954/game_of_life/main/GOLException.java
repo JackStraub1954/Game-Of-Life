@@ -2,6 +2,8 @@ package com.gmail.johnstraub1954.game_of_life.main;
 
 public class GOLException extends Error
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = 4029146397300699557L;
 
     public GOLException()
     {

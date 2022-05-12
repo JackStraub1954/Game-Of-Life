@@ -23,6 +23,9 @@ import com.gmail.johnstraub1954.game_of_life.main.Parameters;
 
 public class ControlsPanel extends JPanel
 {
+    /** Generated serial version ID. */
+    private static final long serialVersionUID = 5123423372989433349L;
+
     /** Parameters singleton */
     private static final Parameters params          = Parameters.INSTANCE;
     /** minimum cell size */
